@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>mono_lidar_depth</name>
+  <version>1.6.0</version>
+  <description>Meta-package for mono_lidar library.</description>
+  <maintainer email="johannes.graeter@kit.edu">Johannes Gräter</maintainer>
+  <license>GPLv3</license>
+  <url type="repository">http://github.com/KIT-MRT/mono_lidar_depth</url>
+  <author email="eike.rehder@kit.edu">Eike Rehder</author>
+  <author email="johannes.graeter@kit.edu">Johannes Gräter</author>
+  <buildtool_depend>catkin</buildtool_depend>
+  <exec_depend>matches_conversion_ros_tool</exec_depend>
+  <exec_depend>matches_msg_conversion_ros</exec_depend>
+  <exec_depend>matches_msg_depth_ros</exec_depend>
+  <exec_depend>monolidar_fusion</exec_depend>
+  <exec_depend>tracklets_depth_ros_tool</exec_depend>
+  <export>
+    <metapackage />
+  </export>
+</package>
