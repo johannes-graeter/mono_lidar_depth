@@ -1,0 +1,50 @@
+#!/usr/bin/env python
+"""
+Add your desired parameters here. All required headers will be generated from this.
+!!!IMPORTANT this file must be executable !!!
+
+Use one of these commands to add parameters to your parameter struct:
+
+def add(self, name, paramtype, description, level=0, edit_method='""', default=None, min=None, max=None, configurable=False, global_scope=False, constant=False):
+        Adds parameters to your parameter struct.
+
+def add_enum(self, name, description, entry_strings, default=None, paramtype='int'):
+        Adds an enum to dynamic reconfigure
+
+def add_group(self, name):
+        Create a parameter group for the dynamic_reconfigure window
+
+def add_publisher(self, name, message_type, description, default_topic="", default_queue_size=5, topic_param=None,
+                  queue_size_param=None, header=None, module=None, configurable=False, global_scope=False,
+                  constant=False):
+        Adds an initialized publisher to your parameter struct and parameter for its topic and queue size
+
+def add_subscriber(self, name, message_type, description, default_topic="", default_queue_size=5, no_delay=False,
+                   topic_param=None, queue_size_param=None, header=None, module=None, configurable=False,
+                   global_scope=False, constant=False):
+        Adds an initialized subscriber to your parameter struct and parameters for topic and queue size.
+
+
+For more information on the API, see here: https://gitlab.mrt.uni-karlsruhe.de/MRT/rosinterface_handler/blob/master/doc/HowToWriteYourFirstInterfaceFile.md
+"""
+from rosinterface_handler.interface_generator_catkin import *
+
+gen = InterfaceGenerator()
+
+# Add a parameter for changing verbosity (=log level) on the fly
+gen.add_verbosity_param(configurable=True)
+
+# Your Params here
+gen.add("roi_width", paramtype='int', description="width of roi to count labels", default=5, min=0, max=50, configurable=True, global_scope=False)
+gen.add("roi_height", paramtype='int', description="height of roi to count labels", default=5, min=0, max=50, configurable=True, global_scope=False)
+
+# Publisher and subscriber (group name will show up in dynamic_reconfigure window)
+pub_sub = gen.add_group("Publisher and subscriber")
+pub_sub.add_subscriber("subscriber_matches", message_type="matches_msg_depth_ros::MatchesMsgWithOutlierFlag", description="subscriber with matches to assign label" , default_topic="in_topic_matches", no_delay=True, configurable=True)
+pub_sub.add_subscriber("subscriber_labels", message_type="sensor_msgs::Image", description="subscriber with matches to assign label" , default_topic="in_topic_semantic_labels", no_delay=True, configurable=True)
+pub_sub.add_publisher("matches_publisher", message_type="matches_msg_depth_ros::MatchesMsgWithOutlierFlag", description="publisher with matches to assign label" , default_topic="out_topic", configurable=True)
+
+
+# DO NOT TOUCH THIS LINE
+#Syntax : Package, Node, Config Name(The final name will be SemanticLabelsConfig)
+exit(gen.generate("matches_conversion_ros_tool", "semantic_labels", "SemanticLabels"))

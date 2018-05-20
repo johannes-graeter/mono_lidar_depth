@@ -1,0 +1,18 @@
+<launch>
+
+    <arg name="config" default="$(find matches_conversion_ros_tool)/launch/params/add_outlier_flag_parameters.yaml"/>
+    <arg name="nodelet_manager_name" default="nodelet_manager_add_outlier_flag"/>
+    <arg name="start_nodelet_manager" default="true"/>
+    <arg name="nodelet_name" default="add_outlier_flag"/>
+
+    <!-- Nodelet manager (if enabled) -->
+    <node pkg="nodelet" type="nodelet" name="$(arg nodelet_manager_name)" args="manager" output="screen"
+          if="$(arg start_nodelet_manager)"/>
+
+    <!-- AddOutlierFlag -->
+    <node pkg="nodelet" type="nodelet" name="$(arg nodelet_name)"
+          args="load matches_conversion_ros_tool/AddOutlierFlagNodelet $(arg nodelet_manager_name)" output="screen" required="true">
+        <rosparam command="load" file="$(arg config)"/>
+    </node>
+
+</launch>

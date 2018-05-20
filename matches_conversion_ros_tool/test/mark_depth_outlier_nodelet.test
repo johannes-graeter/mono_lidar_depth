@@ -1,0 +1,6 @@
+<launch>
+
+    <test test-name="mark_depth_outlier_nodelet_test" pkg="matches_conversion_ros_tool" type="mark_depth_outlier_nodelet-test" time-limit="60.0"/>
+    <include file="$(find matches_conversion_ros_tool)/launch/mark_depth_outlier_nodelet.launch"/>
+</launch>
+

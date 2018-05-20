@@ -1,0 +1,9 @@
+<launch>
+
+  <arg name="config" default="$(find matches_conversion_ros_tool)/launch/params/add_outlier_flag_parameters.yaml" />
+
+  <node pkg="matches_conversion_ros_tool" type="add_outlier_flag" name="add_outlier_flag" output="screen">
+    <rosparam command="load" file="$(arg config)"/>
+  </node>
+
+</launch>

@@ -1,0 +1,18 @@
+<library path="lib/libmark_depth_outlier_nodelet">
+<class name="matches_conversion_ros_tool/MarkDepthOutlierNodelet"
+       type="matches_conversion_ros_tool::MarkDepthOutlierNodelet" base_class_type="nodelet::Nodelet">
+  <description></description>
+</class>
+</library>
+<library path="lib/libsemantic_labels_nodelet">
+<class name="matches_conversion_ros_tool/SemanticLabelsNodelet"
+       type="matches_conversion_ros_tool::SemanticLabelsNodelet" base_class_type="nodelet::Nodelet">
+  <description></description>
+</class>
+</library>
+<library path="lib/libadd_outlier_flag_nodelet">
+<class name="matches_conversion_ros_tool/AddOutlierFlagNodelet"
+       type="matches_conversion_ros_tool::AddOutlierFlagNodelet" base_class_type="nodelet::Nodelet">
+  <description></description>
+</class>
+</library>

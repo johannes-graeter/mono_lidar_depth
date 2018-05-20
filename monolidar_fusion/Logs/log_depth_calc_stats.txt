@@ -1,0 +1,10 @@
+Depth calc Stats: 
+--- DepthCalcStats : 
+Points Count: 466616
+Success: 104793
+Radius search insufficient points: 339933
+Histogram no Local max: 21890
+Triangle not planar: 0
+Treshold depth greater max: 441
+Trehsold depth smaller min: 3221
+

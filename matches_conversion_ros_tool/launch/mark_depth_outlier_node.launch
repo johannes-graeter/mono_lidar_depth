@@ -1,0 +1,9 @@
+<launch>
+
+  <arg name="config" default="$(find matches_conversion_ros_tool)/launch/params/mark_depth_outlier_parameters.yaml" />
+
+  <node pkg="matches_conversion_ros_tool" type="mark_depth_outlier" name="mark_depth_outlier" output="screen">
+    <rosparam command="load" file="$(arg config)"/>
+  </node>
+
+</launch>

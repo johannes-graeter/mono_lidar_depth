@@ -1,0 +1,23 @@
+<launch>
+    <!-- depth estimator tracklets node -->
+    <arg name="config_depth_estimator" default="$(find monolidar_fusion)/parameters.yaml"/>
+    <arg name="config_tracklets_depth" default="$(find tracklets_depth_ros_tool)/launch/params/parameters_ros_tool.yaml"/>
+
+    <node pkg="tracklets_depth_ros_tool" type="tracklet_depth_node" name="tracklet_depth_node" output="screen">
+        <param name="config_tracklet_depth" value="$(arg config_tracklets_depth)" />
+        <param name="config_depth_estimator" value="$(arg config_depth_estimator)" />
+    </node>
+
+
+    <!-- feature tracking node -->
+    <arg name="camera_name" default="camera" />
+    <arg name="config" default="$(find viso_feature_tracking_ros_tool)/res/viso_feature_tracking_mono.yaml"/>
+    <arg name="verbosity" default="info" />    
+
+    <node pkg="viso_feature_tracking_ros_tool" type="viso_feature_tracking_node" name="viso_feature_tracking_node_$(arg camera_name)" output="screen">
+    	<param name="verbosity" value="$(arg verbosity)" />
+        <param name="config" value="$(arg config)" />
+    </node>
+
+
+</launch>

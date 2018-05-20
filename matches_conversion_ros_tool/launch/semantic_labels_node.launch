@@ -1,0 +1,9 @@
+<launch>
+
+  <arg name="config" default="$(find matches_conversion_ros_tool)/launch/params/semantic_labels_parameters.yaml" />
+
+  <node pkg="matches_conversion_ros_tool" type="semantic_labels" name="semantic_labels" output="screen">
+    <rosparam command="load" file="$(arg config)"/>
+  </node>
+
+</launch>

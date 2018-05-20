@@ -1,0 +1,63 @@
+<package format="2">
+  <name>tracklets_depth_ros_tool</name>
+  <version>0.0.0</version>
+  <description>ToDo: Edit package description</description>
+
+  <license>GPLv3</license>
+  <maintainer email="upcrj@student.kit.edu">Alexander Wilczynski</maintainer>
+  <author email="upcrj@student.kit.edu">Alexander Wilczynski</author>
+  <url type="repository">https://gitlab.mrt.uni-karlsruhe.de/wilczynski/tracklets_depth_ros_tool.git</url>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>mrt_cmake_modules</build_depend>
+  <build_depend>message_generation</build_depend>
+  <exec_depend>message_runtime</exec_depend>
+  <test_depend>gtest</test_depend>
+  <test_depend>rostest</test_depend>
+
+  <build_depend>roscpp</build_depend>
+  <depend>roslib</depend>
+  <depend>nodelet</depend>
+  <depend>yaml-cpp</depend>
+
+  <depend>feature_tracking</depend>
+  <depend>mrt_pcl</depend>
+  <depend>eigen</depend>
+
+  <depend>tf_conversions</depend>
+  <depend>monolidar_fusion</depend>
+
+  <depend>matches_msg_ros</depend>
+  <depend>matches_msg_depth_ros</depend>
+
+  <depend>image_transport</depend>
+  <depend>image_geometry</depend>
+  <depend>mrt_opencv</depend>
+  <depend>cv_bridge</depend>
+
+  <!--
+    Documentation for dependencies:
+    <build_depend>            Build-time dependency required to build
+                              this package, e.g. boost, opencv.
+    <build_export_depend>     Exported build-time dependency required to
+                              build packages that depend on this package,
+                              e.g. boost, opencv.
+    <exec_depend>             Execution dependency required to run this
+                              package, e.g. boost, opencv.
+    <depend>                  Build-time, exported build-time and execution
+                              dependency. This is a bundled synonym for
+                              <build_depend>, <build_export_depend> and
+                              <exec_depend>.
+  -->
+  <!--
+    Example:
+    <depend>mrt_opencv</depend>
+  -->
+
+  <depend>dynamic_reconfigure</depend>
+  <depend>message_filters</depend>
+  <build_depend>rosinterface_handler</build_depend>
+  <export>
+    <nodelet plugin="${prefix}/nodelet_plugins.xml" /><!-- Other tools can request additional information be placed here -->
+  </export>
+</package>

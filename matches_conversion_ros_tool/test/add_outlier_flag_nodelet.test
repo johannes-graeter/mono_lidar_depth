@@ -1,0 +1,6 @@
+<launch>
+
+    <test test-name="add_outlier_flag_nodelet_test" pkg="matches_conversion_ros_tool" type="add_outlier_flag_nodelet-test" time-limit="60.0"/>
+    <include file="$(find matches_conversion_ros_tool)/launch/add_outlier_flag_nodelet.launch"/>
+</launch>
+

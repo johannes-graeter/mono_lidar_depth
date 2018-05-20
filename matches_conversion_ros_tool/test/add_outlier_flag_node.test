@@ -1,0 +1,8 @@
+<launch>
+    <!-- uncomment this if your unittest advertises /clock" -->
+    <!--<param name="/use_sim_time" value="True"/>-->
+
+    <test test-name="add_outlier_flag_node_test" pkg="matches_conversion_ros_tool" type="add_outlier_flag_node-test" time-limit="60.0"/>
+    <include file="$(find matches_conversion_ros_tool)/launch/add_outlier_flag_node.launch"/>
+</launch>
+

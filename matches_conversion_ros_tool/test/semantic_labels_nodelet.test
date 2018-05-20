@@ -1,0 +1,6 @@
+<launch>
+
+    <test test-name="semantic_labels_nodelet_test" pkg="matches_conversion_ros_tool" type="semantic_labels_nodelet-test" time-limit="60.0"/>
+    <include file="$(find matches_conversion_ros_tool)/launch/semantic_labels_nodelet.launch"/>
+</launch>
+

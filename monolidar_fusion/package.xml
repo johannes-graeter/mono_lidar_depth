@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>monolidar_fusion</name>
+  <version>0.0.0</version>
+  <description>ToDo: Edit package description</description>
+
+  <license>GPLv3</license>
+  <maintainer email="upcrj@student.kit.edu">Alexander Wilczynski</maintainer>
+  <author email="upcrj@student.kit.edu">Alexander Wilczynski</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>mrt_cmake_modules</build_depend>
+
+  <test_depend>gtest</test_depend>
+
+  <depend>generic_logger</depend>
+  <depend>mrt_opencv</depend>
+  <depend>eigen</depend>
+  <depend>mrt_pcl</depend>
+  <depend>mrt_ceres</depend>
+  
+  <export>
+    <!-- Other tools can request additional information be placed here -->
+  </export>
+</package>
