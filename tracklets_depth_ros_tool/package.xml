@@ -20,7 +20,7 @@
   <depend>nodelet</depend>
   <depend>yaml-cpp</depend>
 
-  <depend>feature_tracking</depend>
+  <depend>feature_tracking_core</depend>
   <depend>mrt_pcl</depend>
   <depend>eigen</depend>
 

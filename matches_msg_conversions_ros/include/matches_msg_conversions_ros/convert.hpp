@@ -14,7 +14,7 @@
 #include <matches_msg_ros/MatchesMsg.h>
 #include <matches_msg_ros/MatchesMsgWithOutlierFlag.h>
 
-#include <keyframe_bundle_adjustment/matches_msg_types.hpp>
+#include <matches_msg_types/tracklets.hpp>
 
 #include <type_traits>
 

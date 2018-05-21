@@ -13,7 +13,6 @@
 
   <test_depend>gtest</test_depend>
 
-  <depend>generic_logger</depend>
   <depend>mrt_opencv</depend>
   <depend>eigen</depend>
   <depend>mrt_pcl</depend>

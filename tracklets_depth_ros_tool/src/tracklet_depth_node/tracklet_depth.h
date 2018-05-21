@@ -24,7 +24,7 @@
 #include <matches_msg_ros/MatchesMsg.h>
 
 
-#include <feature_tracking/tracker_libviso.h>
+#include <feature_tracking_core/tracker_libviso.h>
 
 #include <image_transport/subscriber_filter.h>
 
