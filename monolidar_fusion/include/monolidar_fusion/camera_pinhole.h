@@ -9,6 +9,7 @@
 #pragma once
 #include <vector>
 #include <Eigen/Eigen>
+#include <iostream>
 
 /**
 * @class CameraPinhole
@@ -52,15 +53,32 @@ public: // Public methods.
                         Eigen::Matrix<double, 3, N>& directions) const {
         Eigen::Matrix3d intrinsics = makeIntrinsics();
 
-        Eigen::Matrix<double, 3, N> image_points_hom(image_points.cols());
+        // Copy for circumventing the copy constructor 
+        // (would be different for static and dynamic sized matrices).
+        Eigen::Matrix<double, 3, N> image_points_hom = directions;
         image_points_hom.setOnes();
-        image_points_hom.template block<2, N>(0, 0) = image_points;
+        // Dynamic access in case that N==Eigen::Dynamic.
+        image_points_hom.block(0, 0, 2, N) = image_points;
+        // Get directions.
         directions = intrinsics.inverse() * image_points_hom;
         directions = directions.colwise().normalized();
-
+        // We only support SVP models.
         support_points.setZero();
     }
+    
+    // void getViewingRays(const Eigen::Matrix<double, 2, Eigen::Dynamic>& image_points,
+    //                     Eigen::Matrix<double, 3, Eigen::Dynamic>& support_points,
+    //                     Eigen::Matrix<double, 3, Eigen::Dynamic>& directions) const {
+    //     Eigen::Matrix3d intrinsics = makeIntrinsics();
 
+    //     Eigen::Matrix<double, 3, Eigen::Dynamic> image_points_hom = support_points;
+    //     image_points_hom.setOnes();
+    //     image_points_hom.block(0, 0, 2, image_points.cols()) = image_points;
+    //     directions = intrinsics.inverse() * image_points_hom;
+    //     directions = directions.colwise().normalized();
+
+    //     support_points.setZero();
+    // }
     template <int N>
     Eigen::Array<bool, 1, N> getImagePoints(const Eigen::Matrix<double, 3, N>& points3d,
                                             Eigen::Matrix<double, 2, N>& image_points) const {
