@@ -5,6 +5,7 @@ project(monolidar_fusion)
 ###################
 ## find packages ##
 ###################
+set(MRT_ARCH "None")
 find_package(mrt_cmake_modules REQUIRED)
 include(UseMrtStdCompilerFlags)
 include(UseMrtAutoTarget)
