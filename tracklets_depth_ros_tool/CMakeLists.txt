@@ -6,6 +6,7 @@ project(tracklets_depth_ros_tool)
 ###################
 ## find packages ##
 ###################
+set(MRT_ARCH "None")
 find_package(mrt_cmake_modules REQUIRED)
 include(UseMrtStdCompilerFlags)
 include(UseMrtAutoTarget)
