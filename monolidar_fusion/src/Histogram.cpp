@@ -8,6 +8,7 @@
 #include "Histogram.h"
 #include <iostream>
 #include <stdexcept>
+#include <cmath>
 
 namespace Mono_Lidar {
 Histogram::Histogram(const double binWitdh, const int binCount) : _binWitdh(binWitdh) {
@@ -26,7 +27,7 @@ void Histogram::AddElement(double value) {
     //    }
     // Very big values are put in last bin
     value = std::min(value, 1e10); // if value is very big we will have numerical instabilities
-    int binIndex = static_cast<int>(std::min(std::abs(value / _binWitdh), static_cast<double>(_bins.size()) - 1.));
+    int binIndex = static_cast<int>(std::min(std::fabs(value / _binWitdh), static_cast<double>(_bins.size()) - 1.));
 
     _bins[binIndex]._binContent.push_back(value);
 }
