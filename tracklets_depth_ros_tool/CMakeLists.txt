@@ -46,6 +46,10 @@ if (ROS_GENERATE_MESSAGES)
         )
 endif()
 
+###################################
+## Eigen
+#add_definitions(-DEIGEN_DONT_VECTORIZE -DEIGEN_DISABLE_UNALIGNED_ARRAY_ASSERT)
+
 # Generate dynamic reconfigure options
 file(GLOB PARAMS_FILES RELATIVE "${CMAKE_CURRENT_LIST_DIR}" "cfg/*.params" "cfg/*.cfg" "cfg/*.mrtcfg" "cfg/*.rosif")
 if (PARAMS_FILES)

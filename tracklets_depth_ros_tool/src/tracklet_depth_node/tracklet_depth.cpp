@@ -53,6 +53,12 @@ TrackletDepth::TrackletDepth(ros::NodeHandle node_handle, ros::NodeHandle privat
 
     // ransac plane will be initialializedin depth estimator
     groundPlaneLast_ = nullptr;
+
+    // clear debug write
+    std::stringstream ss;
+    ss << "/tmp/gp.txt";
+    std::ofstream file(ss.str().c_str());
+    file.close();
 }
 
 void TrackletDepth::InitSubscriber(ros::NodeHandle& nh, bool use_semantics) {
@@ -363,6 +369,17 @@ void TrackletDepth::process(const Cloud::ConstPtr& cloud_in,
     TidyUpTracklets(updatetIds);
     TidyUpTimeStamps();
 
+
+    if (groundPlaneLast_ != nullptr) {
+        std::stringstream ss;
+        ss << "/tmp/gp.txt";
+        std::ofstream file(ss.str().c_str(), std::ios_base::app);
+        file.precision(12);
+        Eigen::Vector4f plane_params = groundPlaneLast_->getModelCoeffs();
+        file << plane_params[0] << " " << plane_params[1] << " " << plane_params[2] << " " << plane_params[3]
+             << std::endl;
+        file.close();
+    }
 
     ROS_DEBUG_STREAM("TrackletDepthRosTool: " + stats.str());
     ROS_INFO_STREAM(
