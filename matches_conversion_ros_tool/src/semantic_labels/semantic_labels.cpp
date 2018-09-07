@@ -1,5 +1,7 @@
 #include "semantic_labels.hpp"
 
+#include <chrono>
+#include <unordered_map>
 #include "cv.hpp"
 #include "cv_bridge/cv_bridge.h"
 
@@ -33,13 +35,12 @@ SemanticLabels::SemanticLabels(ros::NodeHandle nh_public, ros::NodeHandle nh_pri
 }
 
 namespace {
-std::map<int, int> calcLabelOccurence(int min_label, int max_label, const cv::Mat& roi) {
-    std::map<int, int> out;
-    // Go through labels and count occurences.
-    for (int i = min_label; i < max_label; ++i) {
-        int occ = cv::countNonZero(roi == i);
-        if (occ > 0) {
-            out[i] = occ;
+std::unordered_map<int, int> calcLabelOccurence(const cv::Mat& roi) {
+    std::unordered_map<int, int> out;
+    for (int i = 0; i < roi.rows; ++i) {
+        for (int j = 0; j < roi.cols; ++j) {
+            int label = static_cast<int>(roi.at<uchar>(i, j));
+            out[label] = out[label] + 1;
         }
     }
 
@@ -47,12 +48,6 @@ std::map<int, int> calcLabelOccurence(int min_label, int max_label, const cv::Ma
 }
 
 void assignLabels(const cv::Mat& m, cv::Size roi_size, matches_msg_depth_ros::MatchesMsgWithOutlierFlag& matches_msg) {
-    // Get Minimum and maximum label.
-    double min_val_d, max_val_d;
-    cv::minMaxLoc(m, &min_val_d, &max_val_d);
-    const int min_val = static_cast<int>(min_val_d);
-    const int max_val = static_cast<int>(max_val_d);
-
     // assign label with max occurence
     for (auto& track : matches_msg.tracks) {
         // Get occurences aroudn tracklet point
@@ -64,7 +59,7 @@ void assignLabels(const cv::Mat& m, cv::Size roi_size, matches_msg_depth_ros::Ma
         int min_v = std::max(0, p.y - roi_size.height / 2);
         int max_v = std::min(m.rows, p.y + roi_size.height / 2);
 
-        auto occ = calcLabelOccurence(min_val, max_val, m(cv::Range(min_v, max_v), cv::Range(min_u, max_u)));
+        auto occ = calcLabelOccurence(m(cv::Range(min_v, max_v), cv::Range(min_u, max_u)));
 
         // Take maximum occurence
         auto it = std::max_element(
@@ -78,6 +73,8 @@ void assignLabels(const cv::Mat& m, cv::Size roi_size, matches_msg_depth_ros::Ma
 }
 void SemanticLabels::callbackSubscriber(const MatchesMsg::ConstPtr& input1,
                                         const sensor_msgs::Image::ConstPtr& input2) {
+    auto start_semantic = std::chrono::steady_clock::now();
+
     // copy msg
     MatchesMsg out_msg = *input1;
 
@@ -85,6 +82,9 @@ void SemanticLabels::callbackSubscriber(const MatchesMsg::ConstPtr& input1,
     cv_bridge::CvImageConstPtr input_image;
     try {
         input_image = cv_bridge::toCvShare(input2, sensor_msgs::image_encodings::MONO8);
+        if (input_image->encoding != "mono8") {
+            throw std::runtime_error("In SemanticLabels: wrong encoding of semantic image. Must be mono8.");
+        }
     } catch (const cv_bridge::Exception& e) {
         ROS_WARN_STREAM("In SemanticLabels: " << e.what());
         interface_.matches_publisher.publish(out_msg);
@@ -99,6 +99,11 @@ void SemanticLabels::callbackSubscriber(const MatchesMsg::ConstPtr& input1,
     }
 
     interface_.matches_publisher.publish(out_msg);
+
+    ROS_INFO_STREAM("Duration assign semantic labels=" << std::chrono::duration_cast<std::chrono::milliseconds>(
+                                                              std::chrono::steady_clock::now() - start_semantic)
+                                                              .count()
+                                                       << " ms");
 }
 
 /**

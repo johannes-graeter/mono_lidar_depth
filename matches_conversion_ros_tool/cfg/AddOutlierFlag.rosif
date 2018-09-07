@@ -39,9 +39,11 @@ gen.add_verbosity_param(configurable=True)
 
 # Publisher and subscriber (group name will show up in dynamic_reconfigure window)
 pub_sub = gen.add_group("Publisher and subscriber")
-pub_sub.add_subscriber("subscriber", message_type="matches_msg_depth_ros::MatchesMsg", description="subscriber for matches without outliers", default_topic="in_topic", no_delay=True, configurable=True)
+pub_sub.add_subscriber("subscriber_depth", message_type="matches_msg_depth_ros::MatchesMsg", description="subscriber for matches with depth and without outliers", default_topic="in_topic_depth", no_delay=True, configurable=True)
+pub_sub.add_subscriber("subscriber", message_type="matches_msg_ros::MatchesMsg", description="subscriber for matches without outliers", default_topic="in_topic", no_delay=True, configurable=True)
 pub_sub.add_publisher("publisher", message_type="matches_msg_depth_ros::MatchesMsgWithOutlierFlag", description="publisher for matches msg with outliers", default_topic="out_topic", configurable=True)
 
+gen.add("has_depth", paramtype='bool', description="Has input message depth?", default="true", configurable=True)
 
 # DO NOT TOUCH THIS LINE
 #Syntax : Package, Node, Config Name(The final name will be AddOutlierFlagConfig)

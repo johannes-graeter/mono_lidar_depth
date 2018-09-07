@@ -5,6 +5,7 @@
 
 #include <matches_msg_depth_ros/MatchesMsg.h>
 #include <matches_msg_depth_ros/MatchesMsgWithOutlierFlag.h>
+#include <matches_msg_ros/MatchesMsg.h>
 
 #include "matches_conversion_ros_tool/AddOutlierFlagInterface.h"
 
@@ -16,7 +17,8 @@ class AddOutlierFlag {
     using ReconfigureConfig = AddOutlierFlagConfig;
     using ReconfigureServer = dynamic_reconfigure::Server<ReconfigureConfig>;
 
-    using InputMsg = matches_msg_depth_ros::MatchesMsg;
+    using InputMsgDepth = matches_msg_depth_ros::MatchesMsg;
+    using InputMsg = matches_msg_ros::MatchesMsg;
     using OutputMsg = matches_msg_depth_ros::MatchesMsgWithOutlierFlag;
 
 public:
@@ -24,6 +26,7 @@ public:
 
 private:
     void callbackSubscriber(const InputMsg::ConstPtr& msg);
+    void callbackSubscriberDepth(const InputMsgDepth::ConstPtr& msg);
     void reconfigureRequest(const ReconfigureConfig&, uint32_t);
 
     Interface interface_;

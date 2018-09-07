@@ -20,13 +20,22 @@ AddOutlierFlag::AddOutlierFlag(ros::NodeHandle nh_public, ros::NodeHandle nh_pri
      * Don't forget to register your callbacks here!
      */
     reconfigureServer_.setCallback(boost::bind(&AddOutlierFlag::reconfigureRequest, this, _1, _2));
-    interface_.subscriber->registerCallback(&AddOutlierFlag::callbackSubscriber, this);
+
+    if (interface_.has_depth) {
+        interface_.subscriber_depth->registerCallback(&AddOutlierFlag::callbackSubscriberDepth, this);
+    } else {
+        interface_.subscriber->registerCallback(&AddOutlierFlag::callbackSubscriber, this);
+    }
 
     rosinterface_handler::showNodeInfo();
 }
 
 void AddOutlierFlag::callbackSubscriber(const InputMsg::ConstPtr& msg) {
+    InputMsgDepth msg_depth = matches_msg_conversions_ros::ConvertToDepth(msg);
+    callbackSubscriberDepth(boost::make_shared<const InputMsgDepth>(msg_depth));
+}
 
+void AddOutlierFlag::callbackSubscriberDepth(const InputMsgDepth::ConstPtr& msg) {
     OutputMsg new_msg = matches_msg_conversions_ros::Convert(msg, std::vector<bool>(msg->tracks.size(), false));
     interface_.publisher.publish(new_msg);
 }
