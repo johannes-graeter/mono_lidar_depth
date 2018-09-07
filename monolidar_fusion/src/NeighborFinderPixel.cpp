@@ -64,30 +64,16 @@ void NeighborFinderPixel::getNeighbors(const Eigen::Vector2d& featurePoint_image
                                        const std::shared_ptr<DepthCalcStatsSinglePoint>& calcStats,
                                        const float scaleWidth,
                                        const float scaleHeight) {
-    double x = featurePoint_image_cs(0);
-    double y = featurePoint_image_cs(1);
+    double halfSizeX = static_cast<double>(_pixelSearchWidth) * 0.5 * static_cast<double>(scaleWidth);
+    double halfSizeY = static_cast<double>(_pixelSearchHeight) * 0.5 * static_cast<double>(scaleHeight);
 
-    double halfSizeX = (double)(_pixelSearchWidth)*0.5d * scaleWidth;
-    double halfSizeY = (double)(_pixelSearchHeight)*0.5d * scaleHeight;
+    double leftEdgeX = std::max(featurePoint_image_cs[0] - halfSizeX, 0.);
+    double rightEdgeX = std::min(featurePoint_image_cs[0] + halfSizeX, static_cast<double>(_imgWitdth - 1));
+    double topEdgeY = std::max(featurePoint_image_cs[1] - halfSizeY, 0.);
+    double bottomEdgeY = std::min(featurePoint_image_cs[1] + halfSizeY, static_cast<double>(_imgHeight - 1));
 
-    double leftEdgeX = x - halfSizeX;
-    double rightEdgeX = x + halfSizeX;
-    double topEdgeY = y - halfSizeY;
-    double bottomEdgeY = y + halfSizeY;
-
-    if (leftEdgeX < 0)
-        leftEdgeX = 0;
-    if (rightEdgeX > (_imgWitdth - 1))
-        rightEdgeX = _imgWitdth - 1;
-    if (topEdgeY < 0)
-        topEdgeY = 0;
-    if (bottomEdgeY > (_imgHeight - 1))
-        bottomEdgeY = _imgHeight - 1;
-
-    using namespace std;
-
-    for (int i = topEdgeY; i <= bottomEdgeY; i++) {
-        for (int j = leftEdgeX; j <= rightEdgeX; j++) {
+    for (int i = static_cast<int>(topEdgeY); i <= static_cast<int>(bottomEdgeY); i++) {
+        for (int j = static_cast<int>(leftEdgeX); j <= static_cast<int>(rightEdgeX); j++) {
             if (_img_points_lidar(j, i) != POINT_NOT_DEFINED) {
                 // get the index from the visible (in camera img) point cloud
                 int index = _img_points_lidar(j, i);

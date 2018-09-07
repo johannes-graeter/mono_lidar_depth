@@ -1,5 +1,6 @@
-#pkg_version=1.4.1
-cmake_minimum_required(VERSION 2.8.3)
+set(MRT_PKG_VERSION 2.2)
+# Modify only if you know what you are doing!
+cmake_minimum_required(VERSION 2.8.12)
 project(monolidar_fusion)
 
 ###################
@@ -11,21 +12,44 @@ include(UseMrtStdCompilerFlags)
 include(UseMrtAutoTarget)
 
 include(GatherDeps)
-#remove libs, which cannot be found automatically
+# Remove libs which cannot be found automatically
 #list(REMOVE_ITEM DEPENDEND_PACKAGES <package name 1> <package name 2> ...)
 find_package(AutoDeps REQUIRED COMPONENTS ${DEPENDEND_PACKAGES})
 
-#manually resolve removed dependend packages
+# Manually resolve removed dependend packages
 #find_package(...)
+
+# Mark files or folders for display in IDEs
+mrt_add_to_ide(README.md .gitlab-ci.yml)
+
+########################
+## add python modules ##
+########################
+# This adds a python module if located under src/{PROJECT_NAME)
+mrt_python_module_setup()
+
+file(GLOB PROJECT_PYTHON_SOURCE_FILES_SRC RELATIVE "${CMAKE_CURRENT_LIST_DIR}" "python_api/*.cpp")
+if (PROJECT_PYTHON_SOURCE_FILES_SRC)
+    # Add a cpp-python api library. Make sure there are no name collisions with python modules in this project
+    mrt_add_python_api( ${PROJECT_NAME}
+        FILES ${PROJECT_PYTHON_SOURCE_FILES_SRC}
+        )
+endif()
+
 ############################
 ## read source code files ##
 ############################
 file(GLOB_RECURSE PROJECT_HEADER_FILES_INC RELATIVE "${CMAKE_CURRENT_LIST_DIR}" "include/*.h" "include/*.hpp")
 file(GLOB PROJECT_SOURCE_FILES_INC RELATIVE "${CMAKE_CURRENT_LIST_DIR}" "src/*.h" "src/*.hpp")
 file(GLOB PROJECT_SOURCE_FILES_SRC RELATIVE "${CMAKE_CURRENT_LIST_DIR}" "src/*.cpp")
+
 if (PROJECT_SOURCE_FILES_SRC)
-	set(LIBRARY_NAME ${PROJECT_NAME})
+    set(LIBRARY_NAME ${PROJECT_NAME})
 endif()
+
+###################################
+## Eigen
+#add_definitions(-DEIGEN_DONT_VECTORIZE -DEIGEN_DISABLE_UNALIGNED_ARRAY_ASSERT)
 
 ###################################
 ## catkin specific configuration ##
@@ -37,69 +61,42 @@ endif()
 # CATKIN_DEPENDS: catkin_packages dependent projects also need
 # DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-  INCLUDE_DIRS include ${mrt_EXPORT_INCLUDE_DIRS}
-  LIBRARIES ${LIBRARY_NAME} ${mrt_EXPORT_LIBRARIES}
-  CATKIN_DEPENDS ${catkin_EXPORT_DEPENDS}
-)
+    INCLUDE_DIRS include ${mrt_EXPORT_INCLUDE_DIRS}
+    LIBRARIES ${LIBRARY_NAME} ${mrt_EXPORT_LIBRARIES}
+    CATKIN_DEPENDS ${catkin_EXPORT_DEPENDS}
+    )
 
 ###########
 ## Build ##
 ###########
 # Add include and library directories
 include_directories(
-  include/${LIBRARY_NAME}
-  ${mrt_INCLUDE_DIRS}
-  ${catkin_INCLUDE_DIRS}
-)
+    include/${PROJECT_NAME}
+    ${mrt_INCLUDE_DIRS}
+    ${catkin_INCLUDE_DIRS}
+    )
 
 link_directories(
-  ${mrt_LIBRARY_DIRS}
-)
+    ${mrt_LIBRARY_DIRS}
+    )
 
-if (PROJECT_SOURCE_FILES_SRC)
-	# Declare a cpp library
-	add_library(${LIBRARY_NAME}
-	  ${PROJECT_HEADER_FILES_INC}
-	  ${PROJECT_SOURCE_FILES_INC}
-	  ${PROJECT_SOURCE_FILES_SRC}
-	)
-	# Specify libraries to link a library or executable target against
-	target_link_libraries(${LIBRARY_NAME}
-	  ${catkin_LIBRARIES}
-	  ${mrt_LIBRARIES}
-	)
-endif()
+# Declare a cpp library
+mrt_add_library(${PROJECT_NAME}
+    INCLUDES ${PROJECT_HEADER_FILES_INC} ${PROJECT_SOURCE_FILES_INC} 
+    SOURCES ${PROJECT_SOURCE_FILES_SRC}
+    )
 
 #############
 ## Install ##
 #############
-if (TARGET ${PROJECT_NAME})
-	# Mark library for installation
-	install(TARGETS ${PROJECT_NAME}
-	  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-	  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-	  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-	)
-endif()
-# Mark c++ header files for installation
-install(DIRECTORY include/${PROJECT_NAME}/
-  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
-  FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp"
-)
-#install(FILES
-#  res/test.png
-#  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-#)
+# Install all targets, headers by default and scripts and other files if specified (folders or files)
+mrt_install(PROGRAMS scripts FILES res data)
 
 #############
 ## Testing ##
 #############
-# Add gtest based cpp test target and link libraries
+# Add test targets for cpp and python tests
 if (CATKIN_ENABLE_TESTING)
-	file(GLOB PROJECT_TEST_FILES_SRC RELATIVE "${CMAKE_CURRENT_LIST_DIR}" "test/*.cpp")
-	foreach(PROJECT_TEST_FILE_SRC ${PROJECT_TEST_FILES_SRC})
-		get_filename_component(PROJECT_TEST_NAME ${PROJECT_TEST_FILE_SRC} NAME_WE)
-		catkin_add_gtest(${PROJECT_TEST_NAME}-test ${PROJECT_TEST_FILE_SRC})
-		target_link_libraries(${PROJECT_TEST_NAME}-test ${LIBRARY_NAME} ${catkin_LIBRARIES} ${mrt_LIBRARIES} gtest_main)
-	endforeach()
+    mrt_add_tests(test)
+    mrt_add_nosetests(test)
 endif()

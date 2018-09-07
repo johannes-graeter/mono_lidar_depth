@@ -7,9 +7,9 @@
 //  and others
 
 #pragma once
+#include <iostream>
 #include <vector>
 #include <Eigen/Eigen>
-#include <iostream>
 
 /**
 * @class CameraPinhole
@@ -53,19 +53,19 @@ public: // Public methods.
                         Eigen::Matrix<double, 3, N>& directions) const {
         Eigen::Matrix3d intrinsics = makeIntrinsics();
 
-        // Copy for circumventing the copy constructor 
+        // Copy for circumventing the copy constructor
         // (would be different for static and dynamic sized matrices).
-        Eigen::Matrix<double, 3, N> image_points_hom = directions;
-        image_points_hom.setOnes();
-        // Dynamic access in case that N==Eigen::Dynamic.
-        image_points_hom.block(0, 0, 2, N) = image_points;
+        //        Eigen::Matrix<double, 3, N> image_points_hom;
+        //        image_points_hom.setOnes(3, directions.cols());
+        //        // Dynamic access in case that N==Eigen::Dynamic.
+        //        image_points_hom.block(0, 0, 2, N) = image_points;
         // Get directions.
-        directions = intrinsics.inverse() * image_points_hom;
+        directions = intrinsics.inverse() * image_points.colwise().homogeneous();
         directions = directions.colwise().normalized();
         // We only support SVP models.
-        support_points.setZero();
+        support_points.setZero(3, directions.cols());
     }
-    
+
     // void getViewingRays(const Eigen::Matrix<double, 2, Eigen::Dynamic>& image_points,
     //                     Eigen::Matrix<double, 3, Eigen::Dynamic>& support_points,
     //                     Eigen::Matrix<double, 3, Eigen::Dynamic>& directions) const {

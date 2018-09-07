@@ -59,8 +59,7 @@ public:
                       const std::vector<int>& pcIndices,
                       std::vector<Eigen::Vector3d>& neighbors);
 
-    virtual ~NeighborFinderBase() {
-    }
+    virtual ~NeighborFinderBase() = default;
 
 protected:
     std::shared_ptr<DepthEstimatorParameters> _parameters;
