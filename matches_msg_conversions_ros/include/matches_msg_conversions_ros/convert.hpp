@@ -14,6 +14,7 @@
 #include <matches_msg_ros/MatchesMsg.h>
 #include <matches_msg_ros/MatchesMsgWithOutlierFlag.h>
 
+#include <matches_msg_types/feature_point_depth.hpp>
 #include <matches_msg_types/tracklets.hpp>
 
 #include <type_traits>
@@ -112,6 +113,39 @@ matches_msg_ros::MatchesMsgWithOutlierFlag Convert(const matches_msg_ros::Matche
                                                    const Errors& errs) {
     return Convert<matches_msg_ros::MatchesMsg, matches_msg_ros::MatchesMsgWithOutlierFlag>(m, out_f, errs);
 }
+
+matches_msg_depth_ros::MatchesMsg ConvertToDepth(const matches_msg_ros::MatchesMsg::ConstPtr m) {
+    matches_msg_depth_ros::MatchesMsg out;
+    out.tracks.reserve(m->tracks.size());
+
+    out.header = m->header;
+    out.stamps = m->stamps;
+
+    for (const auto& t : m->tracks) {
+        matches_msg_depth_ros::Tracklet track;
+        track.id = t.id;
+        track.age = t.age;
+
+        track.feature_points.reserve(t.feature_points.size());
+        for (const auto& f : t.feature_points) {
+            matches_msg_depth_ros::FeaturePoint cur_f;
+            cur_f.u = f.u;
+            cur_f.v = f.v;
+            cur_f.d = -1.;
+            track.feature_points.push_back(cur_f);
+        }
+        out.tracks.push_back(track);
+    }
+    return out;
+}
+
+/**
+ * @brief Convert, convert standard tracklets to non ros type
+ * @return non ros tracklets type
+ */
+// matches_msg_types::Tracklets Convert(const matches_msg_ros::MatchesMsg::ConstPtr);
+
+// matches_msg_types::Tracklets Convert(const matches_msg_depth_ros::MatchesMsg::ConstPtr);
 
 // Overload function for usage of feature points with and without depth.
 matches_msg_types::FeaturePoint getFeaturePoint(const matches_msg_depth_ros::FeaturePoint& f) {

@@ -42,9 +42,9 @@
   
   <!--<test_depend>opencv</test_depend>-->
   <depend>mrt_opencv</depend>
-  <depend>matches_msg_ros</depend>
-  <depend>matches_msg_depth_ros</depend>
-  <depend>keyframe_bundle_adjustment</depend>
+   <depend>matches_msg_ros</depend>
+   <depend>matches_msg_depth_ros</depend>
+   <depend>matches_msg_types</depend>
 
   <export>
     <!-- Other tools can request additional information be placed here -->
