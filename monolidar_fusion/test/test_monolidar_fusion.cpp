@@ -79,13 +79,13 @@ TEST(NeigborFinder, findByPixel) {
     const double cam_p_u = 50;
     const double cam_p_v = 50;
     const double cam_f = 600;
-    const int nf_search_witdh = 3;
+    const int nf_search_widh = 3;
     const int nf_search_height = 5;
 
     // init objects
     std::shared_ptr<CameraPinhole> cam;
     cam = std::make_shared<CameraPinhole>(img_width, img_height, cam_f, cam_p_u, cam_p_v);
-    Mono_Lidar::NeighborFinderPixel neighborFinder(img_width, img_height, nf_search_witdh, nf_search_height);
+    Mono_Lidar::NeighborFinderPixel neighborFinder(img_width, img_height, nf_search_widh, nf_search_height);
 
     // init points
     const int point_count = 50;
@@ -103,21 +103,19 @@ TEST(NeigborFinder, findByPixel) {
     }
 
     Eigen::Matrix3Xd support_points;
-    support_points.resize(3, point_count);
+    support_points.setZero(3, point_count);
     Eigen::Matrix3Xd directions;
-    directions.resize(3, point_count);
+    directions.setZero(3, point_count);
 
     cam->getViewingRays(points_2d_orig, support_points, directions);
 
+    std::cout << directions.colwise().norm() << std::endl;
+
     // init features depth
-    Eigen::MatrixXd features_depth;
-    features_depth.resize(point_count, 1);
-
-    for (int i = 0; i < point_count; i++) {
-        features_depth(i, 0) = std::rand() % 10 + 1;
+    for (int i = 0; i < int(point_count); ++i) {
+        points_3d_cam.block(0, i, 3, 1) = support_points.block(0, i, 3, 1) +
+                                          static_cast<double>((std::rand() % 10 + 1)) * directions.block(0, i, 3, 1);
     }
-
-    points_3d_cam = support_points + features_depth * directions;
 
     // project points on image plane again
     Eigen::Matrix2Xd points_2d_projected;
@@ -139,7 +137,7 @@ TEST(NeigborFinder, findByPixel) {
     for (int i = 0; i < point_count; i++) {
         Eigen::Vector2d feature;
         feature.x() = points_2d_orig(0, i);
-        feature.x() = points_2d_orig(1, i);
+        feature.y() = points_2d_orig(1, i);
 
         std::vector<int> index_out;
 
@@ -155,13 +153,13 @@ TEST(NeigborFinder, findByPixel) {
             neighbor_calc.x() = points_2d_orig(0, index);
             neighbor_calc.y() = points_2d_orig(1, index);
 
-            auto points_dist = (neighbor_projected - neighbor_calc).norm();
-            auto dist_from_feature_u = fabs(neighbor_calc.x() - feature.x());
-            auto dist_from_feature_v = fabs(neighbor_calc.y() - feature.y());
+            double points_dist = (neighbor_projected - neighbor_calc).norm();
+            double dist_from_feature_u = fabs(neighbor_calc.x() - feature.x());
+            double dist_from_feature_v = fabs(neighbor_calc.y() - feature.y());
 
             ASSERT_NEAR(points_dist, 0., 0.01);
-            ASSERT_LE(dist_from_feature_u, (float)(nf_search_witdh)*0.5f + 0.01);
-            ASSERT_LE(dist_from_feature_v, (float)(nf_search_height)*0.5f + 0.01);
+            ASSERT_LE(dist_from_feature_u, std::ceil(static_cast<double>(nf_search_widh) * 0.5) + 0.01);
+            ASSERT_LE(dist_from_feature_v, std::ceil(static_cast<double>(nf_search_height) * 0.5) + 0.01);
         }
     }
 }
