@@ -1,0 +1,12 @@
+<library path="lib/libtracklet_depth_nn_nodelet">
+<class name="tracklets_depth_ros_tool/TrackletDepthNnNodelet"
+       type="tracklets_depth_ros_tool::TrackletDepthNnNodelet" base_class_type="nodelet::Nodelet">
+  <description></description>
+</class>
+</library>
+<library path="lib/libtracklet_depth_nodelet">
+<class name="tracklets_depth_ros_tool/TrackletDepthNodelet"
+       type="tracklets_depth_ros_tool::TrackletDepthNodelet" base_class_type="nodelet::Nodelet">
+  <description></description>
+</class>
+</library>
