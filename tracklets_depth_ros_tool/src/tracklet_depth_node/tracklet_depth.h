@@ -167,7 +167,9 @@ private:
     ///@brief Publishes the statistics which show the count of successful calculated depths and the type of outliers
     void PublishDepthCalcStats();
 
-    // ______ Misc _____
+
+public: // attributes
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     ///@brief init flags
     bool _isCameraInitialized = false;

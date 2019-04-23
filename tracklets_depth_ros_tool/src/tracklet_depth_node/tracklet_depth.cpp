@@ -54,11 +54,11 @@ TrackletDepth::TrackletDepth(ros::NodeHandle node_handle, ros::NodeHandle privat
     // ransac plane will be initialializedin depth estimator
     groundPlaneLast_ = nullptr;
 
-    // clear debug write
-    std::stringstream ss;
-    ss << "/tmp/gp.txt";
-    std::ofstream file(ss.str().c_str());
-    file.close();
+    //    // clear debug write
+    //    std::stringstream ss;
+    //    ss << "/tmp/gp.txt";
+    //    std::ofstream file(ss.str().c_str());
+    //    file.close();
 }
 
 void TrackletDepth::InitSubscriber(ros::NodeHandle& nh, bool use_semantics) {
@@ -362,6 +362,9 @@ void TrackletDepth::process(const Cloud::ConstPtr& cloud_in,
     // msgOut.header.stamp = tracklets_in->header.stamp;
     _publisher_matches.publish(msgOut);
 
+    if(_params.publisher_msg_name_image_projection_cloud!=""){
+        PublishImageProjectionCloud(camInfo->width, camInfo->height);
+    }
     stats << "Feature Estimation success count: " << matchesSuccess.first << std::endl;
     stats << "Feature Estimation fail count: " << matchesSuccess.second << std::endl;
 
@@ -370,16 +373,16 @@ void TrackletDepth::process(const Cloud::ConstPtr& cloud_in,
     TidyUpTimeStamps();
 
 
-    if (groundPlaneLast_ != nullptr) {
-        std::stringstream ss;
-        ss << "/tmp/gp.txt";
-        std::ofstream file(ss.str().c_str(), std::ios_base::app);
-        file.precision(12);
-        Eigen::Vector4f plane_params = groundPlaneLast_->getModelCoeffs();
-        file << plane_params[0] << " " << plane_params[1] << " " << plane_params[2] << " " << plane_params[3]
-             << std::endl;
-        file.close();
-    }
+    //    if (groundPlaneLast_ != nullptr) {
+    //        std::stringstream ss;
+    //        ss << "/tmp/gp.txt";
+    //        std::ofstream file(ss.str().c_str(), std::ios_base::app);
+    //        file.precision(12);
+    //        Eigen::Vector4f plane_params = groundPlaneLast_->getModelCoeffs();
+    //        file << plane_params[0] << " " << plane_params[1] << " " << plane_params[2] << " " << plane_params[3]
+    //             << std::endl;
+    //        file.close();
+    //    }
 
     ROS_DEBUG_STREAM("TrackletDepthRosTool: " + stats.str());
     ROS_INFO_STREAM(
@@ -392,10 +395,11 @@ void TrackletDepth::process(const Cloud::ConstPtr& cloud_in,
 void TrackletDepth::TidyUpTracklets(const std::vector<TypeTrackletKey>& updatedIds) {
     std::vector<TypeTrackletKey> toDelete;
 
-    for (const auto keyAvailable : _trackletMap)
+    for (const auto& keyAvailable : _trackletMap){
         toDelete.push_back(keyAvailable.first);
-
-    for (const auto keyStay : updatedIds) {
+    }
+    
+    for (const auto& keyStay : updatedIds) {
         for (int i = 0; i < int(toDelete.size()); i++) {
             if (toDelete.at(i) == keyStay) {
                 toDelete.erase(toDelete.begin() + i);
@@ -481,23 +485,28 @@ std::pair<int, int> TrackletDepth::convert_tracklets_to_matches_msg(
 void TrackletDepth::InitPublisher(ros::NodeHandle& nh) {
     // Pusblisher
     std::cout << "Pusblisher name pointcloud camera cs: " << _params.publisher_msg_name_cloud_camera_cs << std::endl;
+    if(_params.publisher_msg_name_cloud_camera_cs!=""){
     _publisher_cloud_camera_cs =
         nh.advertise<Cloud>(_params.publisher_msg_name_cloud_camera_cs, _params.msg_queue_size);
-
+    }
     std::cout << "Publisher name pointcloud interpolated: " << _params.publisher_msg_name_cloud_interpolated
               << std::endl;
+    if(_params.publisher_msg_name_cloud_interpolated!=""){
     _publisher_cloud_interpolated =
         nh.advertise<Cloud>(_params.publisher_msg_name_cloud_interpolated, _params.msg_queue_size);
-
+    }
     std::cout << "Publisher name image projection cloud: " << _params.publisher_msg_name_image_projection_cloud
               << std::endl;
+    if(_params.publisher_msg_name_image_projection_cloud!=""){
     _publisher_image_projection_cloud =
         _image_transport.advertise(_params.publisher_msg_name_image_projection_cloud, _params.msg_queue_size);
-
+    }
     std::cout << "Publisher name calc depth stats: " << _params.publisher_msg_name_depthcalc_stats << std::endl;
+    if(_params.publisher_msg_name_depthcalc_stats!=""){
     _publisher_depthcalc_stats =
         nh.advertise<std_msgs::String>(_params.publisher_msg_name_depthcalc_stats, _params.msg_queue_size);
-
+    }
+    
     std::cout << "Publisher name tracklets depth with depth: " << _params.publisher_msg_name_tracklets_depth
               << std::endl;
     _publisher_matches = nh.advertise<matches_msg_depth_ros::MatchesMsg>(_params.publisher_msg_name_tracklets_depth,

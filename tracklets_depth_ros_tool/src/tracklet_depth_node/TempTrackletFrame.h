@@ -12,8 +12,7 @@ public:
     TempTrackletFrame(const int id, const std::pair<int, int>& feature) : _keyFrameId(id), _feature(feature) {
     }
 
-    virtual ~TempTrackletFrame() {
-    }
+    virtual ~TempTrackletFrame() = default;
 };
 
 struct TempTrackletFrameExp : public TempTrackletFrame {
