@@ -15,7 +15,7 @@ TresholdDepthLocal::TresholdDepthLocal(const eTresholdDepthMode& mode,
         : _mode(mode), _toleranceType(toleranceType), _toleranceValue(toleranceValue) {
 }
 
-eTresholdResult TresholdDepthLocal::CheckInBounds(const std::vector<Eigen::Vector3d>& pointCloud, double& depth) {
+eTresholdResult TresholdDepthLocal::CheckInBounds(const VecOfVec3d& pointCloud, double& depth) {
     // calculate the min and max depth interval borders of he pointcloud
     double minZ = std::numeric_limits<double>::max();
     double maxZ = std::numeric_limits<double>::lowest();

@@ -17,11 +17,11 @@ PlaneEstimationCalcMaxSpanningTriangle::PlaneEstimationCalcMaxSpanningTriangle(c
         : _distTreshold(distTreshold), _publishPoints(publishPoints) {
 }
 
-bool PlaneEstimationCalcMaxSpanningTriangle::CalculatePlaneCorners(const std::vector<Eigen::Vector3d>& points,
+bool PlaneEstimationCalcMaxSpanningTriangle::CalculatePlaneCorners(const VecOfVec3d& points,
                                                                    Eigen::Vector3d& corner1,
                                                                    Eigen::Vector3d& corner2,
                                                                    Eigen::Vector3d& corner3,
-                                                                   std::vector<Eigen::Vector3d>& publishPointList) {
+                                                                   VecOfVec3d& publishPointList) {
     bool result = CalculatePlaneCorners(points, corner1, corner2, corner3);
 
 #pragma omp critical
@@ -34,7 +34,7 @@ bool PlaneEstimationCalcMaxSpanningTriangle::CalculatePlaneCorners(const std::ve
     return result;
 }
 
-bool PlaneEstimationCalcMaxSpanningTriangle::CalculatePlaneCorners(const std::vector<Eigen::Vector3d>& points,
+bool PlaneEstimationCalcMaxSpanningTriangle::CalculatePlaneCorners(const VecOfVec3d& points,
                                                                    Eigen::Vector3d& corner1,
                                                                    Eigen::Vector3d& corner2,
                                                                    Eigen::Vector3d& corner3) {

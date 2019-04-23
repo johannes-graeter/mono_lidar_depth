@@ -12,7 +12,7 @@ namespace Mono_Lidar {
 PlaneEstimationLeastSquares::PlaneEstimationLeastSquares() {
 }
 
-bool PlaneEstimationLeastSquares::EstimatePlane(const std::vector<Eigen::Vector3d>& points,
+bool PlaneEstimationLeastSquares::EstimatePlane(const VecOfVec3d& points,
                                                 Eigen::Vector3d& planeNormal,
                                                 double& resultDistance) {
     // set initial pose

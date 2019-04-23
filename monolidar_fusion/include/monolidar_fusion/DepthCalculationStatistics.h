@@ -16,6 +16,9 @@
 namespace Mono_Lidar {
 class DepthCalculationStatistics {
 public:
+    // Specify Eigen Alignment, should be obsolete with c++17
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+public:
     DepthCalculationStatistics();
     ~DepthCalculationStatistics() {
     }

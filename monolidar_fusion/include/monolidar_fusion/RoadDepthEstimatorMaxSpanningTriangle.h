@@ -9,12 +9,12 @@
 
 #include <memory>
 #include <Eigen/Eigen>
-
 #include "LinePlaneIntersectionBase.h"
 #include "LinePlaneIntersectionCeckXZTreshold.h"
 #include "PlaneEstimationCalcMaxSpanningTriangle.h"
 #include "RoadDepthEstimatorBase.h"
 #include "eDepthResultType.h"
+#include "eigen_stl_defs.h"
 
 namespace Mono_Lidar {
 class RoadDepthEstimatorMaxSpanningTriangle : public RoadDepthEstimatorBase {
@@ -26,7 +26,7 @@ public:
 
     std::pair<DepthResultType, double> CalculateDepth(const Eigen::Vector2d& point_image,
                                                       const std::shared_ptr<CameraPinhole> _camera,
-                                                      const std::vector<Eigen::Vector3d>& planePoints,
+                                                      const VecOfVec3d& planePoints,
                                                       Eigen::Vector3d& pointiNtersection) override;
 
 private:

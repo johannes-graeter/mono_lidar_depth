@@ -8,12 +8,15 @@
 #pragma once
 
 #include <Eigen/Eigen>
-
 #include "PlaneEstimationMEstimator.h"
 #include "RoadDepthEstimatorBase.h"
+#include "eigen_stl_defs.h"
 
 namespace Mono_Lidar {
 class RoadDepthEstimatorMEstimator : public RoadDepthEstimatorBase {
+public:
+    // Specify Eigen Alignment, should be obsolete with c++17
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 public:
     RoadDepthEstimatorMEstimator();
 
@@ -22,7 +25,7 @@ public:
      */
     std::pair<DepthResultType, double> CalculateDepth(const Eigen::Vector2d& point_image,
                                                       const std::shared_ptr<CameraPinhole> _camera,
-                                                      const std::vector<Eigen::Vector3d>& planePoints,
+                                                      const VecOfVec3d& planePoints,
                                                       Eigen::Vector3d& pointIntersection) override;
 
     void setPlanePrior(const Eigen::Hyperplane<double, 3>& plane);

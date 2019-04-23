@@ -15,7 +15,7 @@ void NeighborFinderBase::Initialize(std::shared_ptr<DepthEstimatorParameters>& p
 void NeighborFinderBase::getNeighbors(const Eigen::Matrix3Xd& points_cs_camera,
                                       const std::vector<int>& pointIndices,
                                       const std::vector<int>& pcIndicesCut,
-                                      std::vector<Eigen::Vector3d>& neighbors) {
+                                      VecOfVec3d& neighbors) {
     using namespace std;
 
     for (const int index : pcIndicesCut) {
@@ -28,7 +28,7 @@ void NeighborFinderBase::getNeighbors(const Eigen::Matrix3Xd& points_cs_camera,
 
 void NeighborFinderBase::getNeighbors(const Eigen::Matrix3Xd& points_cs_camera,
                                       const std::vector<int>& pcIndicesFull,
-                                      std::vector<Eigen::Vector3d>& neighbors) {
+                                      VecOfVec3d& neighbors) {
     using namespace std;
 
     for (const int index : pcIndicesFull) {

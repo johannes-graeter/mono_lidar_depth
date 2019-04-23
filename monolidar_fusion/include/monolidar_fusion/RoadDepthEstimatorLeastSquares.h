@@ -9,6 +9,8 @@
 
 #include <Eigen/Eigen>
 
+#include "eigen_stl_defs.h"
+
 #include "PlaneEstimationLeastSquares.h"
 #include "RoadDepthEstimatorBase.h"
 
@@ -19,7 +21,7 @@ public:
 
     std::pair<DepthResultType, double> CalculateDepth(const Eigen::Vector2d& point_image,
                                                       const std::shared_ptr<CameraPinhole> _camera,
-                                                      const std::vector<Eigen::Vector3d>& planePoints,
+                                                      const VecOfVec3d& planePoints,
                                                       Eigen::Vector3d& pointiNtersection) override;
 
 private:

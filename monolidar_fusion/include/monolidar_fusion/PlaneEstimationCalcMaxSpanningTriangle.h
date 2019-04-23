@@ -9,6 +9,7 @@
 
 #include <vector>
 #include <Eigen/Eigen>
+#include "eigen_stl_defs.h"
 
 namespace Mono_Lidar {
 /*
@@ -31,16 +32,16 @@ public:
      * @param corner2 [out] corner 2 of the biggest spanning triangle
      * @param corner3 [out] corner 3 of the biggest spanning triangle
      */
-    bool CalculatePlaneCorners(const std::vector<Eigen::Vector3d>& points,
+    bool CalculatePlaneCorners(const VecOfVec3d& points,
                                Eigen::Vector3d& corner1,
                                Eigen::Vector3d& corner2,
                                Eigen::Vector3d& corner3);
 
-    bool CalculatePlaneCorners(const std::vector<Eigen::Vector3d>& points,
+    bool CalculatePlaneCorners(const VecOfVec3d& points,
                                Eigen::Vector3d& corner1,
                                Eigen::Vector3d& corner2,
                                Eigen::Vector3d& corner3,
-                               std::vector<Eigen::Vector3d>& publishPointList);
+                               VecOfVec3d& publishPointList);
 
 private:
     double _distTreshold;

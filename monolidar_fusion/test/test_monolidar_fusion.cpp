@@ -38,7 +38,9 @@
 
 #include <Eigen/Eigen>
 
+#include <chrono>
 #include <memory>
+#include <random>
 #include <vector>
 
 // test classes
@@ -46,6 +48,10 @@
 #include "HistogramPointDepth.h"
 #include "NeighborFinderPixel.h"
 #include "PointcloudData.h"
+#include "RansacPlane.h"
+//#include "pcl/filters/random_sample.h"
+
+#include "eigen_stl_defs.h"
 
 #include "camera_pinhole.h"
 
@@ -271,7 +277,7 @@ TEST(LidarSegmenter, test1) {
 TEST(Histogram, GetNearestPoint) {
     // init point-list
     const int points_count = 10;
-    std::vector<Eigen::Vector3d> input_points;
+    VecOfVec3d input_points;
     std::vector<int> points_index;
     Eigen::VectorXd input_depths;
     input_depths.resize(points_count);
@@ -285,7 +291,7 @@ TEST(Histogram, GetNearestPoint) {
     }
 
     // test method
-    std::vector<Eigen::Vector3d> output;
+    VecOfVec3d output;
     std::vector<int> output_index;
     Mono_Lidar::PointHistogram::GetNearestPoint(input_points, points_index, input_depths, output, output_index);
 
@@ -298,7 +304,7 @@ TEST(Histogram, GetNearestPoint) {
 
 // Test the method to find a local maximum using a depth segmenting histogram
 TEST(Histogram, FilterPointsMinDistBlob) {
-    std::vector<Eigen::Vector3d> input_points;
+    VecOfVec3d input_points;
 
     // init points
     input_points.push_back(Eigen::Vector3d(0, 0, 2.2));
@@ -328,7 +334,7 @@ TEST(Histogram, FilterPointsMinDistBlob) {
     // histogram values
     const double bin_width = 1;
     const int minimum_max_size = 3;
-    std::vector<Eigen::Vector3d> output;
+    VecOfVec3d output;
     std::vector<int> output_index;
     double higher_border;
     double lower_border;
@@ -365,4 +371,71 @@ TEST(Histogram, FilterPointsMinDistBlob) {
     ASSERT_EQ(output.at(0).z(), 8.2);
     ASSERT_EQ(output.at(1).z(), 8.3);
     ASSERT_EQ(output.at(2).z(), 8.4);
+}
+
+TEST(RansacPlane, CalculateInlersPlane) {
+    int size_data = 18000;
+
+    // generate data
+    using Cloud = pcl::PointCloud<pcl::PointXYZI>;
+    Cloud::Ptr cl(new Cloud);
+
+    std::default_random_engine generator;
+    generator.seed(1234);
+
+    std::uniform_real_distribution<> distribution(-20., 20.);
+    std::normal_distribution<float> noise_dist(0., 0.5);
+
+    Eigen::Vector3d plane_normal(0., 0., 1.);
+    plane_normal.normalize();
+
+    float d = 1.6;
+
+    for (int i = 0; i < int(size_data); ++i) {
+        float rand_num_x = distribution(generator);
+        float rand_num_y = distribution(generator);
+
+        // n.transpose().dot(x)+d=0;
+        float z = -(plane_normal.x() * rand_num_x + plane_normal.y() * rand_num_y + d) / plane_normal.z();
+
+        pcl::PointXYZI p;
+        p.x = rand_num_x + noise_dist(generator);
+        p.y = rand_num_y + noise_dist(generator);
+        p.z = z + noise_dist(generator);
+
+        p.intensity = 150;
+
+        cl->points.push_back(p);
+    }
+
+    // Cerate instance
+
+    Mono_Lidar::DepthEstimatorParameters params;
+
+    params.ransac_plane_distance_treshold = 0.2;
+    params.ransac_plane_max_iterations = 600;
+    params.ransac_plane_use_refinement = true;
+    params.ransac_plane_refinement_treshold = 0.05;
+    params.ransac_plane_probability = 0.99;
+
+    Mono_Lidar::RansacPlane p(std::make_shared<Mono_Lidar::DepthEstimatorParameters>(params));
+    {
+        auto start_time_ransac_pcl = std::chrono::steady_clock::now();
+        p.CalculateInliersPlane(cl);
+        std::cout << "Duration ransac pcl="
+                  << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() -
+                                                                           start_time_ransac_pcl)
+                         .count()
+                  << " ms" << std::endl;
+        Eigen::Vector4f coeffs = p.getModelCoeffs();
+
+        float sign = coeffs[2] > 0. ? 1. : -1.;
+        plane_normal *= sign;
+        d *= sign;
+
+        ASSERT_NEAR(coeffs[0], plane_normal[0], 0.2);
+        ASSERT_NEAR(coeffs[1], plane_normal[1], 0.2);
+        ASSERT_NEAR(coeffs[2], plane_normal[2], 0.2);
+        ASSERT_NEAR(coeffs[3], d, 0.2);
+    }
 }

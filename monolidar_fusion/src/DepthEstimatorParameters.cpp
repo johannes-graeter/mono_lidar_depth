@@ -82,6 +82,8 @@ void DepthEstimatorParameters::fromFile(const std::string& filePath) {
     // Ransac Plane Estimation
     do_use_ransac_plane = (int)fSettings[str_do_use_ransac_plane];
     ransac_plane_distance_treshold = (double)fSettings[str_ransac_plane_distance_treshold];
+    ransac_plane_min_z = (double)fSettings[str_ransac_plane_min_z];
+    ransac_plane_max_z = (double)fSettings[str_ransac_plane_max_z];
     ransac_plane_max_iterations = (int)fSettings[str_ransac_plane_max_iterations];
     ransac_plane_use_refinement = (int)fSettings[str_ransac_plane_use_refinement];
     ransac_plane_refinement_treshold = (double)fSettings[str_ransac_plane_refinement_treshold];

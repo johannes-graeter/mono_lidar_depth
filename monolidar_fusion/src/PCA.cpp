@@ -39,7 +39,7 @@ PCA_Result PCA::getResult() {
     return PCA_Result::Plane;
 }
 
-void PCA::CalculatePCA(const Eigen::MatrixXd& pointCloud, std::vector<Eigen::Vector4d>& eigenVectorsValues) {
+void PCA::CalculatePCA(const Eigen::MatrixXd& pointCloud, VecOfVec4d& eigenVectorsValues) {
     // Input: PCL is matrix with one 3d point per column
     // Output: fourth compoenent variance along principal component
     // calc mean of PCL

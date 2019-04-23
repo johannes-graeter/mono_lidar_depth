@@ -19,6 +19,7 @@
 
 #include "DepthEstimatorParameters.h"
 
+#include <map>
 #include <set>
 
 ///@brief forward declaration
@@ -36,6 +37,7 @@ namespace Mono_Lidar {
 */
 class GroundPlane {
 public: // Public classes/enums/types etc...
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     using Ptr = std::shared_ptr<GroundPlane>;
 
     using Point = pcl::PointXYZI;
@@ -64,9 +66,11 @@ public: // Public methods.
     GroundPlane& operator=(const GroundPlane& other) = default;
 
 
-    // Interface for calculate inliers
-    virtual void CalculateInliersPlane(const Cloud::ConstPtr& pointCloud) = 0;
-
+    // Interface for calculate inliers 
+    virtual void CalculateInliersPlane(const Cloud::ConstPtr& pointCloud){
+        CalculateInliersPlane(pointCloud, -1000., 1000.);
+    }
+    virtual void CalculateInliersPlane(const Cloud::ConstPtr& pointCloud, double min_z, double max_z) = 0;
     /*
      * Function that will test if ransac was applied at least once
      */
@@ -102,7 +106,7 @@ public: // Public methods.
      * Returns a list which stores the index of the points which have been estimated as plane inliers.
      * The index relaes to the original point cloud.
      */
-    inline std::vector<int>& getInlinersIndex() {
+    const std::vector<int>& getInlinersIndex() {
         return _inliersIndex;
     }
 
@@ -125,6 +129,7 @@ protected:
  */
 class RansacPlane : public GroundPlane {
 public:
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     using Ptr = std::shared_ptr<RansacPlane>;
 
 
@@ -147,6 +152,7 @@ public:
      * @param cloudMatrix [in] The same pointCloud in matrix notation. It's calculated from outside due to optimization
      */
     void CalculateInliersPlane(const Cloud::ConstPtr& pointCloud) override;
+    void CalculateInliersPlane(const Cloud::ConstPtr& pointCloud, double min_z, double max_z) override;
 
 private:
     double _planeDistanceTreshold;
@@ -154,6 +160,7 @@ private:
     bool _doUsePlaneRefinement;
     double _planeRefinementDistance;
     double _planeProbability;
+    int _numberRandomSamplePoints;
 };
 
 
@@ -165,6 +172,8 @@ private:
 */
 class SemanticPlane : public GroundPlane {
 public: // Public classes/enums/types etc...
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
     struct Camera {
         double f;
         double cu;
@@ -194,6 +203,9 @@ public: // Public methods.
     SemanticPlane(const SemanticPlane& other) = default;
     SemanticPlane& operator=(const SemanticPlane& other) = default;
 
+    void CalculateInliersPlane(const Cloud::ConstPtr& pointCloud, double min_z, double max_z) override{
+        CalculateInliersPlane(pointCloud);
+    }
     void CalculateInliersPlane(const Cloud::ConstPtr& pointCloud) override;
 
 private:

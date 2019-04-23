@@ -14,6 +14,9 @@
 
 namespace Mono_Lidar {
 struct ErrorPlane {
+    // Specify Eigen Alignment, should be obsolete with c++17
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
     ErrorPlane(const Eigen::Vector3d& point, const double errorScale) : _point(point), _errorScale(errorScale) {
     }
 

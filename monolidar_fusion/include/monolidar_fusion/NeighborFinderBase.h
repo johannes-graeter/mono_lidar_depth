@@ -10,6 +10,8 @@
 #include <memory>
 #include <Eigen/Eigen>
 
+#include "eigen_stl_defs.h"
+
 #include "DepthCalcStatsSinglePoint.h"
 #include "DepthEstimatorParameters.h"
 
@@ -48,7 +50,7 @@ public:
     void getNeighbors(const Eigen::Matrix3Xd& points_cs_camera,
                       const std::vector<int>& pointIndices,
                       const std::vector<int>& imgIndicesCut,
-                      std::vector<Eigen::Vector3d>& neighbors);
+                      VecOfVec3d& neighbors);
 
     /*
      * Get the 3d Points from a cloud using it's indices
@@ -57,7 +59,7 @@ public:
      */
     void getNeighbors(const Eigen::Matrix3Xd& points_cs_camera,
                       const std::vector<int>& pcIndices,
-                      std::vector<Eigen::Vector3d>& neighbors);
+                      VecOfVec3d& neighbors);
 
     virtual ~NeighborFinderBase() = default;
 

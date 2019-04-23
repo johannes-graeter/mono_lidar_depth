@@ -10,6 +10,7 @@
 #include <iostream>
 #include <memory>
 #include <Eigen/Eigen>
+#include <Eigen/StdVector>
 
 #include "DepthEstimatorParameters.h"
 
@@ -17,6 +18,12 @@ namespace Mono_LidarPipeline {
 enum PCA_Result { Point, Linear, Plane, Cubic };
 
 class PCA {
+public:
+    // Specify Eigen Alignment, should be obsolete with c++17
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
+    using VecOfVec4d = std::vector<Eigen::Vector4d, Eigen::aligned_allocator<Eigen::Vector4d>>;
+
 public:
     PCA(const std::shared_ptr<Mono_Lidar::DepthEstimatorParameters>& parameters, const Eigen::MatrixXd& pointCloud);
 
@@ -38,7 +45,7 @@ public:
     }
 
 private:
-    void CalculatePCA(const Eigen::MatrixXd& pointCloud, std::vector<Eigen::Vector4d>& eigenVectorsValues);
+    void CalculatePCA(const Eigen::MatrixXd& pointCloud, VecOfVec4d& eigenVectorsValues);
 
     PCA_Result CheckEigenValueTest(const Eigen::Vector3d& eigenValues,
                                    const Eigen::Matrix3d& eigenVectors,
@@ -49,7 +56,7 @@ private:
     void resultToString(const PCA_Result result, std::string& str);
 
     // Calculation results
-    std::vector<Eigen::Vector4d> _eigenVectorsValues;
+    VecOfVec4d _eigenVectorsValues;
     Eigen::Vector3d _pclMean;
     Eigen::Vector3d _planeNormal;
 

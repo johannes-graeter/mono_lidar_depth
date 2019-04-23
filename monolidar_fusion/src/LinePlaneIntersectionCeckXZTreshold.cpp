@@ -12,7 +12,7 @@ namespace Mono_Lidar {
 LinePlaneIntersectionCeckXZTreshold::LinePlaneIntersectionCeckXZTreshold(double treshold) : _treshold(treshold) {
 }
 
-bool LinePlaneIntersectionCeckXZTreshold::Check(const std::vector<Eigen::Vector3d>& points) {
+bool LinePlaneIntersectionCeckXZTreshold::Check(const VecOfVec3d& points) {
     double minX = std::numeric_limits<double>::max();
     double maxX = std::numeric_limits<double>::lowest();
     double minZ = std::numeric_limits<double>::max();
@@ -44,7 +44,7 @@ bool LinePlaneIntersectionCeckXZTreshold::Check(const std::vector<Eigen::Vector3
     return result;
 }
 
-bool LinePlaneIntersectionCeckXZTreshold::Check(const std::vector<Eigen::Vector3d>& points, double treshold) {
+bool LinePlaneIntersectionCeckXZTreshold::Check(const VecOfVec3d& points, double treshold) {
     this->_treshold = treshold;
     return Check(points);
 }

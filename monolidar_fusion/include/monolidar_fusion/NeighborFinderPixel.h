@@ -14,6 +14,9 @@
 namespace Mono_Lidar {
 class NeighborFinderPixel : public NeighborFinderBase {
 public:
+    // Specify Eigen Alignment, should be obsolete with c++17
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+public:
     NeighborFinderPixel(const int imgWitdh,
                         const int imgHeight,
                         const int pixelSearchWidth,

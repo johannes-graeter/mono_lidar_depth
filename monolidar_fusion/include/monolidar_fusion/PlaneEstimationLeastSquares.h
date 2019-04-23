@@ -9,13 +9,13 @@
 
 #include <vector>
 #include <Eigen/Eigen>
+#include "eigen_stl_defs.h"
 
 namespace Mono_Lidar {
 class PlaneEstimationLeastSquares {
-
 public:
     PlaneEstimationLeastSquares();
 
-    bool EstimatePlane(const std::vector<Eigen::Vector3d>& points, Eigen::Vector3d& planeNormal, double& resultDist);
+    bool EstimatePlane(const VecOfVec3d& points, Eigen::Vector3d& planeNormal, double& resultDist);
 };
 }

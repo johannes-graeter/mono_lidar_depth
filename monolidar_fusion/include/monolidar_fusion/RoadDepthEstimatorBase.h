@@ -12,6 +12,8 @@
 
 #include <Eigen/Eigen>
 
+#include "eigen_stl_defs.h"
+
 #include "camera_pinhole.h"
 
 #include "LinePlaneIntersectionBase.h"
@@ -22,14 +24,13 @@
 namespace Mono_Lidar {
 class RoadDepthEstimatorBase {
 public:
-    virtual ~RoadDepthEstimatorBase() {
-    }
+    virtual ~RoadDepthEstimatorBase() = default;
 
     RoadDepthEstimatorBase();
 
     virtual std::pair<DepthResultType, double> CalculateDepth(const Eigen::Vector2d& point_image,
                                                               const std::shared_ptr<CameraPinhole> _camera,
-                                                              const std::vector<Eigen::Vector3d>& planePoints,
+                                                              const VecOfVec3d& planePoints,
                                                               Eigen::Vector3d& pointiNtersection) = 0;
 
     void EnableTresholdDepthGlobal(const eTresholdDepthMode& mode, const double minValue, const double maxValue);

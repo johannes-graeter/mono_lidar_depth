@@ -12,8 +12,10 @@
 
 namespace Mono_Lidar {
 class PointcloudData {
+public:
+    // Specify Eigen Alignment, should be obsolete with c++17
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
-private:
 public:
     Eigen::Matrix3Xd _points_cs_lidar;  // lidar points in lidar-coordinates
     Eigen::Matrix3Xd _points_cs_camera; // lidar points in camera-coordinates

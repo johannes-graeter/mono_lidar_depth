@@ -21,7 +21,7 @@ RoadDepthEstimatorLeastSquares::RoadDepthEstimatorLeastSquares() {
 std::pair<DepthResultType, double> RoadDepthEstimatorLeastSquares::CalculateDepth(
     const Eigen::Vector2d& point_image,
     const std::shared_ptr<CameraPinhole> _camera,
-    const std::vector<Eigen::Vector3d>& planePoints,
+    const VecOfVec3d& planePoints,
     Eigen::Vector3d& pointiNtersection) {
     // Estimate the plane through the given pointlist
     Eigen::Vector3d planeNormal;

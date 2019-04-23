@@ -10,6 +10,8 @@
 #include <vector>
 #include <Eigen/Eigen>
 
+#include "eigen_stl_defs.h"
+
 #include "eTresholdDepthMode.h"
 #include "eTresholdResult.h"
 
@@ -42,7 +44,7 @@ public:
                        const eTresholdToleranceType toleranceType,
                        const double toleranceValue);
 
-    eTresholdResult CheckInBounds(const std::vector<Eigen::Vector3d>& pointCloud, double& depth);
+    eTresholdResult CheckInBounds(const VecOfVec3d& pointCloud, double& depth);
 
 private:
     eTresholdDepthMode _mode;

@@ -10,6 +10,7 @@
 #include <math.h>
 #include <vector>
 #include <Eigen/Eigen>
+#include "eigen_stl_defs.h"
 
 namespace Mono_Lidar {
 class PlaneEstimationMEstimator {
@@ -25,7 +26,7 @@ public:
      * near the plane are weighted stronger
      * @param resultPlane Resulting plane through the pointcloud
      */
-    bool EstimatePlane(const std::vector<Eigen::Vector3d>& points,
+    bool EstimatePlane(const VecOfVec3d& points,
                        const Eigen::Hyperplane<double, 3>& planeInit,
                        Eigen::Hyperplane<double, 3>& resulPlane);
 };

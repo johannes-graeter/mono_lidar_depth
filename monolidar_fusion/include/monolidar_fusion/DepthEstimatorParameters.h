@@ -112,6 +112,8 @@ public:
     // Ransac Plane Estimation
     bool do_use_ransac_plane{true};
     double ransac_plane_distance_treshold{0.2};
+    double ransac_plane_min_z{-10000};
+    double ransac_plane_max_z{10000};
     int ransac_plane_max_iterations{10000};
     bool ransac_plane_use_refinement{true};
     double ransac_plane_refinement_treshold{10.2};
@@ -123,6 +125,8 @@ public:
 
     std::string str_do_use_ransac_plane = "do_use_ransac_plane";
     std::string str_ransac_plane_distance_treshold = "ransac_plane_distance_treshold";
+    std::string str_ransac_plane_min_z = "ransac_plane_min_z";
+    std::string str_ransac_plane_max_z = "ransac_plane_max_z";
     std::string str_ransac_plane_max_iterations = "ransac_plane_max_iterations";
     std::string str_ransac_plane_use_refinement = "ransac_plane_use_refinement";
     std::string str_ransac_plane_refinement_treshold = "ransac_plane_refinement_treshold";

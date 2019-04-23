@@ -12,12 +12,12 @@
 
 namespace Mono_Lidar {
 
-bool PointHistogram::FilterPointsMinDistBlob(const std::vector<Eigen::Vector3d>& inputPoints,
+bool PointHistogram::FilterPointsMinDistBlob(const VecOfVec3d& inputPoints,
                                              const std::vector<int>& neighborsIndex,
                                              const Eigen::VectorXd& inputDepths,
                                              const double binWitdh,
                                              const int minimalMaximumSize,
-                                             std::vector<Eigen::Vector3d>& output,
+                                             VecOfVec3d& output,
                                              std::vector<int>& outputIndex,
                                              double& lowerBorder,
                                              double& higherBorder,

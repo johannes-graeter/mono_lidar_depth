@@ -31,9 +31,15 @@
 #include "camera_pinhole.h"
 #include "eDepthResultType.h"
 
+#include "eigen_stl_defs.h"
+
+
 namespace Mono_Lidar {
 
 class DepthEstimator {
+public:
+    // Specify Eigen Alignment, should be obsolete with c++17
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
 public:
     std::map<DepthResultType, std::string> DepthResultTypeMap{

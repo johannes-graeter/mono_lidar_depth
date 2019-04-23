@@ -17,8 +17,7 @@ namespace Mono_Lidar {
  */
 class LinePlaneIntersectionBase {
 public:
-    virtual ~LinePlaneIntersectionBase() {
-    }
+    virtual ~LinePlaneIntersectionBase() = default;
 
     /*
      * Gets the intersection point between a plane and a parameterized line (starting by n0 through n1)

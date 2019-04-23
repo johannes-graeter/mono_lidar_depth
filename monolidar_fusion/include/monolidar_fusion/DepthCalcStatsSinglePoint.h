@@ -18,6 +18,9 @@
 
 namespace Mono_Lidar {
 struct DepthCalcStatsSinglePoint {
+    // Specify Eigen Alignment, should be obsolete with c++17
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
     // result type of the depth calculation
     DepthResultType _calcResult;
     // Lidar neigbors which are near the feature point

@@ -24,7 +24,7 @@ RoadDepthEstimatorMaxSpanningTriangle::RoadDepthEstimatorMaxSpanningTriangle(con
 std::pair<DepthResultType, double> RoadDepthEstimatorMaxSpanningTriangle::CalculateDepth(
     const Eigen::Vector2d& point_image,
     const std::shared_ptr<CameraPinhole> _camera,
-    const std::vector<Eigen::Vector3d>& planePoints,
+    const VecOfVec3d& planePoints,
     Eigen::Vector3d& pointiNtersection) {
     // Get the spanning triangle from lidar points
     Eigen::Vector3d corner1;

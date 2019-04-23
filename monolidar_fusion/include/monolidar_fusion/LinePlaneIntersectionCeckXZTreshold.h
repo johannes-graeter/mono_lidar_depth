@@ -8,6 +8,7 @@
 #pragma once
 
 #include <Eigen/Eigen>
+#include "eigen_stl_defs.h"
 
 namespace Mono_Lidar {
 class LinePlaneIntersectionCeckXZTreshold {
@@ -15,10 +16,10 @@ public:
     LinePlaneIntersectionCeckXZTreshold(double treshold);
 
     // points are in camera coordinates
-    bool Check(const std::vector<Eigen::Vector3d>& points);
+    bool Check(const VecOfVec3d& points);
 
     // points are in camera coordinates
-    bool Check(const std::vector<Eigen::Vector3d>& points, double treshold);
+    bool Check(const VecOfVec3d& points, double treshold);
 
 private:
     double _treshold;

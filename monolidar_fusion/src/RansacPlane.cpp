@@ -7,11 +7,12 @@
 
 #include <pcl/ModelCoefficients.h>
 #include <pcl/common/transforms.h>
-#include <pcl/filters/passthrough.h>
-#include <pcl/filters/voxel_grid.h>
+#include <pcl/filters/approximate_voxel_grid.h>
+#include <pcl/filters/random_sample.h>
 #include <pcl/sample_consensus/ransac.h>
 #include <pcl/sample_consensus/sac_model_perpendicular_plane.h>
 #include <pcl/segmentation/sac_segmentation.h>
+#include <pcl/filters/passthrough.h>
 
 #include <chrono>
 #include <math.h>
@@ -20,6 +21,7 @@
 
 #include "Logger.h"
 #include "RansacPlane.h"
+#include "RansacPlaneModel.h"
 
 namespace Mono_Lidar {
 RansacPlane::RansacPlane(const std::shared_ptr<Mono_Lidar::DepthEstimatorParameters>& parameters)
@@ -27,50 +29,19 @@ RansacPlane::RansacPlane(const std::shared_ptr<Mono_Lidar::DepthEstimatorParamet
           _planeMaxIteraions(parameters->ransac_plane_max_iterations),
           _doUsePlaneRefinement(parameters->ransac_plane_use_refinement),
           _planeRefinementDistance(parameters->ransac_plane_refinement_treshold),
-          _planeProbability(parameters->ransac_plane_probability) {
+          _planeProbability(parameters->ransac_plane_probability), _numberRandomSamplePoints(6000) {
 
     is_segmented_ = false;
 }
 
 void RansacPlane::CalculateInliersPlane(const Cloud::ConstPtr& pointCloud) {
+    CalculateInliersPlane(pointCloud,-1000, 1000);
+}
+
+void RansacPlane::CalculateInliersPlane(const Cloud::ConstPtr& pointCloud, double min_z, double max_z) {
     Mono_Lidar::Logger::Instance().Log(Mono_Lidar::Logger::MethodStart, "RansacPlane::CalculateInliersPlane Sart: ");
 
-    auto start_time_ransac = std::chrono::steady_clock::now();
-
-    _inliersIndex.clear();
-
-    //    std::cout << "Ransac: pcl size before filter=" << pointCloud->points.size() << std::endl;
-
-    // To speed things up we use only a fraction of the pointcloud
-    Cloud::Ptr cloudFiltered(new Cloud);
-
-    // First we cut all points with z values out of our interest
-    pcl::PassThrough<Point> pass;
-    pass.setInputCloud(pointCloud);
-    // The filter field name is set to the z coordinate, and the accepted interval values are set to (-inf;-0.5).
-    pass.setFilterFieldName("z");
-    pass.setFilterLimits(-2.2, -1.2);
-    pass.filter(*cloudFiltered);
-
-    // Filter points with 0 reflectance.
-    pcl::PassThrough<Point> pass_intensity;
-    pass_intensity.setInputCloud(cloudFiltered);
-    pass_intensity.setFilterFieldName("intensity");
-    pass_intensity.setFilterLimits(0.05, FLT_MAX);
-    pass_intensity.filter(*cloudFiltered);
-
-    // std::cout << "Ransac: pcl size after filter=" << cloudFiltered->points.size() << std::endl;
-
-    // Now we voxelize the cloud
-    // pcl::VoxelGrid<Point> sor;
-    // sor.setInputCloud(cloudFiltered);
-    // sor.setLeafSize(0.15f, 0.15f, 0.15f);
-    // sor.filter(*cloudFiltered);
-
-    // std::cout << "Ransac: pcl size after voxelizatiion=" << cloudFiltered->points.size() << std::endl;
-
-
-    if (cloudFiltered->points.size() < 3) {
+    if (pointCloud->points.size() < 3) {
         std::cout << "In RansacPlane: Not enough_points for ransac.!!!!!!!!!!" << std::endl;
         for (const auto& el : pointCloud->points) {
             std::cout << el.x << " " << el.y << " " << el.z << " " << el.intensity << std::endl;
@@ -78,12 +49,29 @@ void RansacPlane::CalculateInliersPlane(const Cloud::ConstPtr& pointCloud) {
         throw ExceptionPclInvalid();
     }
 
-    // std::cout << "Ransac: pcl size after filter=" << cloudFiltered->points.size() << std::endl;
+    _inliersIndex.clear();
+    // Initialize with all indices of cloud.
+    _inliersIndex.resize(pointCloud->points.size());
+    std::iota(_inliersIndex.begin(), _inliersIndex.end(), 0);
 
-    // Now do RANSAC
-    // SACSegmentation is a wrapper for the commented code and should yield the same results.
-    //    pcl::SACSegmentation<Point> seg;
-    //    seg.setOptimizeCoefficients(_doUsePlaneRefinement);
+    // Filter z.
+    if(min_z>-1001.){
+        pcl::PassThrough<Point> pass;    
+        pass.setInputCloud(pointCloud);
+        pass.setFilterFieldName("z");
+        pass.setFilterLimits(min_z, max_z);
+        pass.filter(_inliersIndex);
+    }
+    
+    if (_numberRandomSamplePoints > 100) {
+        std::cout << "size before randomization " << pointCloud->points.size() << std::endl;
+        pcl::RandomSample<Point> sor;
+        sor.setInputCloud(pointCloud);
+        sor.setIndices(boost::make_shared<std::vector<int>>(_inliersIndex));
+        sor.setSample(_numberRandomSamplePoints);
+        sor.filter(_inliersIndex);
+        std::cout << "size after randomization " << _inliersIndex.size() << std::endl;
+    }
 
     //    seg.setAxis(Eigen::Vector3f(0.0, 0.0, 1.0));
     //    seg.setEpsAngle(M_PI / 12.); // 15°
@@ -104,11 +92,12 @@ void RansacPlane::CalculateInliersPlane(const Cloud::ConstPtr& pointCloud) {
     //    coefficients->values[3];
 
     pcl::SampleConsensusModelPerpendicularPlane<Point>::Ptr model_p(
-        new pcl::SampleConsensusModelPerpendicularPlane<Point>(cloudFiltered));
+        new pcl::SampleConsensusModelPerpendicularPlane<Point>(pointCloud));
 
     model_p->setAxis(Eigen::Vector3f(0.0, 0.0, 1.0));
     //    model_p->setEpsAngle(M_PI / 12.); // 15°
     model_p->setEpsAngle(M_PI / 18.); // 10°
+    model_p->setIndices(_inliersIndex);
 
     pcl::RandomSampleConsensus<Point> ransac(model_p);
     //		pcl::ModelCoefficients::Ptr coefficients (new pcl::ModelCoefficients);
@@ -120,38 +109,31 @@ void RansacPlane::CalculateInliersPlane(const Cloud::ConstPtr& pointCloud) {
 
     Eigen::VectorXf modelCoeffs;
     ransac.getModelCoefficients(modelCoeffs);
-
-    std::cout << "Duration ransac="
-              << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() -
-                                                                       start_time_ransac)
-                     .count()
-              << " ms" << std::endl;
+    _modelCoeffs[0] = modelCoeffs[0];
+    _modelCoeffs[1] = modelCoeffs[1];
+    _modelCoeffs[2] = modelCoeffs[2];
+    _modelCoeffs[3] = modelCoeffs[3];
 
     if (_doUsePlaneRefinement) {
         // Take the inliers and recompute a better solution with a least squares on the inliers of RANSAC
         Eigen::VectorXf modelCoeffsRefined;
         model_p->optimizeModelCoefficients(_inliersIndex, modelCoeffs, modelCoeffsRefined);
         model_p->selectWithinDistance(modelCoeffs, _planeRefinementDistance, _inliersIndex);
-        _modelCoeffs = modelCoeffsRefined;
-    } else {
-        _modelCoeffs = modelCoeffs;
+        _modelCoeffs[0] = modelCoeffsRefined[0];
+        _modelCoeffs[1] = modelCoeffsRefined[1];
+        _modelCoeffs[2] = modelCoeffsRefined[2];
+        _modelCoeffs[3] = modelCoeffsRefined[3];
     }
 
     _pointIsInPlane.clear();
 
     // write inliers indices into map
-    for (const int& index : _inliersIndex) {
+    for (const auto& index : _inliersIndex) {
         _pointIsInPlane.insert(std::pair<int, bool>(index, true));
     }
 
     // set flag so we know ransac was applied
     is_segmented_ = true;
-
-    std::cout << "Duration ransac+opti="
-              << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() -
-                                                                       start_time_ransac)
-                     .count()
-              << " ms" << std::endl;
 
 
     Mono_Lidar::Logger::Instance().Log(Mono_Lidar::Logger::MethodEnd, "RansacPlane::CalculateInliersPlane.");
@@ -257,8 +239,7 @@ void SemanticPlane::CalculateInliersPlane(const Cloud::ConstPtr& cloud) {
     {
         Eigen::VectorXf dummy_model_coeffs(4);
         dummy_model_coeffs << 0., 0., 1., 0.;
-        // The implementation of a least squares fit is very strange. It is done in optimize Model, where a prior for
-        // the
+        // The implementation of a least squares fit is very strange. It is done in optimize Model, where a prior for the
         // coefficients is needed. However this prior is only used as a return value if the input is wrong and is unused
         // for the optimization.
         model_p->optimizeModelCoefficients(inliers_cam, dummy_model_coeffs, model_coeffs);
@@ -278,11 +259,14 @@ void SemanticPlane::CalculateInliersPlane(const Cloud::ConstPtr& cloud) {
               << std::endl;
     // Assign stuff to parent.
     _modelCoeffs = model_coeffs_refine;
-    _inliersIndex = inliers_refine;
+    _inliersIndex.clear();
+    for (const auto& el : inliers_refine) {
+        _inliersIndex.push_back(el);
+    }
     _pointIsInPlane.clear();
     // Write inliers indices into map.
-    for (const int& index : _inliersIndex) {
-        _pointIsInPlane.insert(std::pair<int, bool>(index, true));
+    for (const auto& index : _inliersIndex) {
+        _pointIsInPlane.insert(std::pair<size_t, bool>(index, true));
     }
 
     // Set flag so we know that segmentation is done.

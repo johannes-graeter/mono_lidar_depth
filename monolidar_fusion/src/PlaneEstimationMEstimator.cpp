@@ -15,7 +15,7 @@ namespace Mono_Lidar {
 PlaneEstimationMEstimator::PlaneEstimationMEstimator() {
 }
 
-bool PlaneEstimationMEstimator::EstimatePlane(const std::vector<Eigen::Vector3d>& points,
+bool PlaneEstimationMEstimator::EstimatePlane(const VecOfVec3d& points,
                                               const Eigen::Hyperplane<double, 3>& plane,
                                               Eigen::Hyperplane<double, 3>& resulPlane) {
     // copy coordinates to  matrix in Eigen format

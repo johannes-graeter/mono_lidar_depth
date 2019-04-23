@@ -13,6 +13,9 @@
 #include "DepthCalcStatsSinglePoint.h"
 #include "Histogram.h"
 
+#include "eigen_stl_defs.h"
+
+
 namespace Mono_Lidar {
 
 class PointHistogram {
@@ -33,12 +36,12 @@ public:
      *
      * @return bool True, if a local maximum with the minimum value (point count in the bin) has been found, else false
      */
-    static bool FilterPointsMinDistBlob(const std::vector<Eigen::Vector3d>& inputPoints,
+    static bool FilterPointsMinDistBlob(const VecOfVec3d& inputPoints,
                                         const std::vector<int>& neighborsIndex,
                                         const Eigen::VectorXd& inputDepths,
                                         const double binWitdh,
                                         const int minimalMaximumSize,
-                                        std::vector<Eigen::Vector3d>& output,
+                                        VecOfVec3d& output,
                                         std::vector<int>& outputIndex,
                                         double& lowerBorder,
                                         double& higherBorder,
@@ -56,10 +59,10 @@ public:
      * @return bool True, if a nearest point has been found
      *
      */
-    static bool GetNearestPoint(const std::vector<Eigen::Vector3d>& inputPoints,
+    static bool GetNearestPoint(const VecOfVec3d& inputPoints,
                                 const std::vector<int>& neighborsIndex,
                                 const Eigen::VectorXd& inputDepths,
-                                std::vector<Eigen::Vector3d>& output,
+                                VecOfVec3d& output,
                                 std::vector<int>& outputIndex);
 
 private:

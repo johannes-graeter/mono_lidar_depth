@@ -28,7 +28,7 @@ void RoadDepthEstimatorMEstimator::setPlanePrior(const Eigen::Hyperplane<double,
 std::pair<DepthResultType, double> RoadDepthEstimatorMEstimator::CalculateDepth(
     const Eigen::Vector2d& point_image,
     const std::shared_ptr<CameraPinhole> _camera,
-    const std::vector<Eigen::Vector3d>& planePoints,
+    const VecOfVec3d& planePoints,
     Eigen::Vector3d& pointIntersection) {
     if (!_isPriorSet)
         throw("Roadplane prior of mestimator has no been set before calling 'CalculateDepth'.");

@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <sstream>
+
 namespace Mono_Lidar {
 struct NNParams {
     int search_params = 32;
