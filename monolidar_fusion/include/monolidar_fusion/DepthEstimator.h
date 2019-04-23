@@ -230,7 +230,7 @@ private:
      * @param content List of 3d points
      * @param cloud Created cloud
      */
-    void FillCloud(const std::vector<Eigen::Vector3d> content, const Cloud::Ptr& cloud);
+    void FillCloud(const VecOfVec3d content, const Cloud::Ptr& cloud);
 
     /*
      * Extracts the part of a pointcloud which is visible in a camera frame
@@ -251,14 +251,14 @@ private:
      */
     bool CalculateNeighbors(const Eigen::Vector2d& featurePoint_image_cs,
                             std::vector<int>& neighborIndices,
-                            std::vector<Eigen::Vector3d>& neighbors,
+                            VecOfVec3d& neighbors,
                             std::shared_ptr<DepthCalcStatsSinglePoint> calcStats,
                             const float scaleX = 1.0,
                             const float scaleY = 1.0);
 
-    bool CalculateDepthSegmentation(const std::vector<Eigen::Vector3d>& neighbors,
+    bool CalculateDepthSegmentation(const VecOfVec3d& neighbors,
                                     const std::vector<int>& neighborsIndex,
-                                    std::vector<Eigen::Vector3d>& pointsSegmented,
+                                    VecOfVec3d& pointsSegmented,
                                     std::vector<int>& pointsSegmentedIndex,
                                     std::shared_ptr<DepthCalcStatsSinglePoint> calcStats);
 
@@ -273,31 +273,34 @@ private:
      * @param nearestPointIndex The index (visible points) of the found nearest point
      *
      */
-    bool CalculateNearestPoint(const std::vector<Eigen::Vector3d>& neighbors,
+    bool CalculateNearestPoint(const VecOfVec3d& neighbors,
                                const std::vector<int>& neighborsIndex,
                                Eigen::Vector3d& nearestPoint,
                                int& nearestPointIndex);
 
     int CalcDepthSegmentionRegionGrowing(const Eigen::Vector2d& featurePoint_image_cs,
-                                         std::vector<Eigen::Vector3d>& neighborsSegmented,
+                                         VecOfVec3d& neighborsSegmented,
                                          std::vector<int>& imgNeighborsSegmentedIndex);
 
-    bool CalculateDepthSegmentationPlane(const std::vector<Eigen::Vector3d>& neighbors,
+    bool CalculateDepthSegmentationPlane(const VecOfVec3d& neighbors,
                                          const std::vector<int> neighborIndices,
-                                         std::vector<Eigen::Vector3d>& pointsSegmented,
+                                         VecOfVec3d& pointsSegmented,
                                          std::shared_ptr<DepthCalcStatsSinglePoint> calcStats,
                                          GroundPlane::Ptr ransacPlane);
 
     std::pair<DepthResultType, double> CalculateDepthSegmented(const Eigen::Vector2d& point_image_cs,
-                                                               const std::vector<Eigen::Vector3d>& neighborsSegmented,
+                                                               const VecOfVec3d& neighborsSegmented,
                                                                std::shared_ptr<DepthCalcStatsSinglePoint> calcStats,
                                                                const bool checkPlanarTriangle = false);
 
-    /**
-     * Transforms the pointcloud (lidar cs) into the camera cs and projects it's points into the image frame
-     * @param lidar_to_cam Affine transformation from lidar to camera cooridnates
-     */
-    void Transform_Cloud_LidarToCamera(const Cloud::ConstPtr& cloud_lidar_cs, const Eigen::Affine3d& lidar_to_cam);
+//    /**
+//     * Transforms the pointcloud (lidar cs) into the camera cs and projects it's points into the image frame
+//     * @param lidar_to_cam Affine transformation from lidar to camera cooridnates
+//     */
+//    PointcloudData Transform_Cloud_LidarToCamera(const Cloud::ConstPtr& cloud_lidar_cs,
+//                                                 const Eigen::Affine3d& lidar_to_cam,
+//                                                 std::shared_ptr<CameraPinhole> camera,
+//                                                 std::shared_ptr<HelperLidarRowSegmentation> lidarRowSegmenter);
 
     /**
      * Writes a lidar point cloud into a different format.
@@ -306,7 +309,7 @@ private:
      * @param [out] Pointcloud in format matrixxX: Returns a matrix with the image size (img.witdh * img.height) and
      * index of the visible lidar point cloud at the corresponding x-y-coordinates
      */
-    // void Transform(const std::vector<Eigen::Vector3d>& in, Eigen::Matrix3d& out);
+    // void Transform(const VecOfVec3d& in, Eigen::Matrix3d& out);
 
     // Initialization flags
     /*
@@ -322,14 +325,13 @@ private:
     PointcloudData _points; // stored all points of the pointcloud in
 
     // Following lists of points are used for visualization and debugging purpose
-    std::vector<Eigen::Vector3d>
-        _points_interpolated; // list of intersection points from camera ray with triangle image plane
-    std::vector<Eigen::Vector3d> _points_interpolated_plane; // list of intersection points from camera ray with
-                                                             // triangle image plane from he ground plane
-    std::vector<Eigen::Vector3d>
+    VecOfVec3d _points_interpolated;       // list of intersection points from camera ray with triangle image plane
+    VecOfVec3d _points_interpolated_plane; // list of intersection points from camera ray with
+                                           // triangle image plane from he ground plane
+    VecOfVec3d
         _points_triangle_corners; // list of triangle corners (lidar points) spanning a local patch for a feature point
-    std::vector<Eigen::Vector3d> _points_neighbors;   // list of points of all found neighbor points
-    std::vector<Eigen::Vector3d> _points_groundplane; // list of points which are estimated as ground plane
+    VecOfVec3d _points_neighbors; // list of points of all found neighbor points
+    VecOfVec3d _points_groundplane; // list of points which are estimated as ground plane
 
     // Following objects are the modules used for depth estimation
     std::shared_ptr<NeighborFinderBase> _neighborFinder;

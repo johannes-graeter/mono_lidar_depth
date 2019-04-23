@@ -122,10 +122,10 @@ bool PointHistogram::FilterPointsMinDistBlob(const VecOfVec3d& inputPoints,
     return true;
 }
 
-bool PointHistogram::GetNearestPoint(const std::vector<Eigen::Vector3d>& inputPoints,
+bool PointHistogram::GetNearestPoint(const VecOfVec3d& inputPoints,
                                      const std::vector<int>& neighborsIndex,
                                      const Eigen::VectorXd& inputDepths,
-                                     std::vector<Eigen::Vector3d>& output,
+                                     VecOfVec3d& output,
                                      std::vector<int>& outputIndex) {
     float minDepth = std::numeric_limits<double>::max();
     int minIndex = -1;
