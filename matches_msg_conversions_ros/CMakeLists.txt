@@ -9,7 +9,7 @@ project(matches_msg_conversions_ros)
 find_package(mrt_cmake_modules REQUIRED)
 include(UseMrtStdCompilerFlags)
 include(UseMrtAutoTarget)
-include(MrtParamGenerator)
+#include(MrtParamGenerator)
 
 include(GatherDeps)
 # Remove libs which cannot be found automatically
