@@ -25,7 +25,7 @@
   <depend>matches_msg_depth_ros</depend>
   <depend>matches_msg_conversions_ros</depend>
   <depend>sensor_msgs</depend>
-  <depend>mrt_opencv</depend>
+  <depend>opencv</depend>
   <depend>cv_bridge</depend>
 
   <depend>dynamic_reconfigure</depend>

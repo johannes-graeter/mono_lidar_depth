@@ -13,10 +13,10 @@
 
   <test_depend>gtest</test_depend>
 
-  <depend>mrt_opencv</depend>
+  <depend>ceres</depend>
   <depend>eigen</depend>
-  <depend>mrt_pcl</depend>
-  <depend>mrt_ceres</depend>
+  <depend>opencv</depend>
+  <depend>pcl</depend>
   
   <export>
     <!-- Other tools can request additional information be placed here -->
