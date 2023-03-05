@@ -5,14 +5,14 @@
  *      Author: wilczynski
  */
 
-#include "tracklet_depth.h"
+#include "tracklet_depth_interface.h"
 
 int main(int argc, char** argv) {
     ros::init(argc, argv, "tracklet_depth_node");
-    std::cout << "Starting node: TrackletDepth Estimator " << std::endl;
+    std::cout << "Starting node: TrackletDepthInterface Estimator " << std::endl;
 
     try {
-        tracklets_depth_ros_tool::TrackletDepth trackletDepth(ros::NodeHandle(), ros::NodeHandle("~"));
+        tracklets_depth_ros_tool::TrackletDepthInterface trackletDepth(ros::NodeHandle(), ros::NodeHandle("~"));
         ros::spin();
 
         return EXIT_SUCCESS;

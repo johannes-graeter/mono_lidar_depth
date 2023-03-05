@@ -5,9 +5,9 @@
  *      Author: wilczynski
  */
 
-#include "parameters.h"
+#include "tracklets_depth/parameters.h"
 
-namespace tracklets_depth_ros_tool {
+namespace tracklets_depth {
 
 void TrackletDepthParameters::fromFile(const std::string& filePath) {
     using namespace std;
