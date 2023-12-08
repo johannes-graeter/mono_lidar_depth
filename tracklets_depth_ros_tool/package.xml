@@ -18,7 +18,6 @@
   <build_depend>roscpp</build_depend>
   <depend>roslib</depend>
   <depend>nodelet</depend>
-  <depend>yaml-cpp</depend>
 
   <depend>feature_tracking_core</depend>
   <depend>mrt_pcl</depend>
@@ -26,6 +25,7 @@
 
   <depend>tf_conversions</depend>
   <depend>monolidar_fusion</depend>
+  <depend>tracklets_depth</depend>
 
   <depend>matches_msg_ros</depend>
   <depend>matches_msg_depth_ros</depend>

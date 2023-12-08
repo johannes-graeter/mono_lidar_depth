@@ -12,7 +12,7 @@
 #include <ros/ros.h>
 #include <opencv2/core/core.hpp>
 
-namespace tracklets_depth_ros_tool {
+namespace tracklets_depth {
 
 class TrackletDepthParameters {
 public:

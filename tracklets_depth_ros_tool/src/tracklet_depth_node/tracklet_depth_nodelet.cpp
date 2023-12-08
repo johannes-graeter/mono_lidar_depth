@@ -2,16 +2,16 @@
 #include <nodelet/nodelet.h>
 #include <pluginlib/class_list_macros.h>
 
-#include "tracklet_depth.h"
+#include "tracklet_depth_interface.h"
 
 namespace tracklets_depth_ros_tool {
 
 class TrackletDepthNodelet : public nodelet::Nodelet {
 
     inline void onInit() override {
-        impl_ = std::make_unique<TrackletDepth>(getNodeHandle(), getPrivateNodeHandle());
+        impl_ = std::make_unique<TrackletDepthInterface>(getNodeHandle(), getPrivateNodeHandle());
     }
-    std::unique_ptr<TrackletDepth> impl_;
+    std::unique_ptr<TrackletDepthInterface> impl_;
 
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW

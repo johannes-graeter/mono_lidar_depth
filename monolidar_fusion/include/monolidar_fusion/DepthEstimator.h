@@ -80,7 +80,7 @@ public:
     /*
      * Initializes the parameters with default parameters. Must be called before class usuage.
      */
-    bool InitConfig(const bool printparams = false);
+    bool InitConfig(std::shared_ptr<DepthEstimatorParameters>& parameters = nullptr, const bool printparams = false);
 
     void ActivateDebugMode() {
         _debugMode = true;
