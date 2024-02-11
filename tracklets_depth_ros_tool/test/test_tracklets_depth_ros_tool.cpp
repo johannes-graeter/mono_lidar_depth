@@ -101,8 +101,8 @@
 //	CreateTrackletMsg(trackletMsg);
 //
 //	// process
-//	std::vector<std::shared_ptr<tracklet_depth::TempTrackletFrame>> tempFrames;
-//	tracklet_depth::ExractNewTrackletFrames(tracklets_in, tempFrames);
+//	std::vector<std::shared_ptr<tracklets_depth::TempTrackletFrame>> tempFrames;
+//	tracklets_depth::ExractNewTrackletFrames(tracklets_in, tempFrames);
 //
 //	Eigen::VectorXd depthsLastFrame;
 //	Eigen::VectorXd depthsCurFrame;
@@ -110,7 +110,7 @@
 //	depthsCurFrame.setConstant(trackletMsg.tracks.size(), -1);
 //
 //	std::vector<TypeTrackletKey> updatetIds;
-//	auto trackletsCount = tracklet_depth::SaveFeatureDepths(tempFrames, depthsLastFrame, depthsCurFrame, updatetIds);
+//	auto trackletsCount = tracklets_depth::SaveFeatureDepths(tempFrames, depthsLastFrame, depthsCurFrame, updatetIds);
 //
 //
 //

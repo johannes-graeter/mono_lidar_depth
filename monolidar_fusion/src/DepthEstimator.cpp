@@ -139,7 +139,7 @@ bool DepthEstimator::InitConfig(const std::string& filePath, const bool printpar
 }
 
 
-bool DepthEstimator::InitConfig(std::shared_ptr<DepthEstimatorParameters>& parameters, const bool printparams) {
+bool DepthEstimator::InitConfig(std::shared_ptr<DepthEstimatorParameters> parameters, const bool printparams) {
     if (!parameters)
         _parameters = std::make_shared<DepthEstimatorParameters>();
     else 

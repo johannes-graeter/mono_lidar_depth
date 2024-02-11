@@ -1,9 +1,22 @@
 #pragma once
 
-#include "monolidar_fusion/DepthEstimatorParameters.h"
-#include "tracklets_depth/parameters.h"
+#include <sensor_msgs/CameraInfo.h>
+#include <sensor_msgs/Image.h>
+#include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
+#include <matches_msg_ros/MatchesMsg.h>
+#include <feature_tracking_core/tracklet.h>
+#include <matches_msg_depth_ros/MatchesMsg.h>
+#include <monolidar_fusion/camera_pinhole.h>
+#include <monolidar_fusion/DepthEstimator.h>
+#include <monolidar_fusion/DepthEstimatorParameters.h>
+#include <monolidar_fusion/DepthCalculationStatistics.h>
+#include <monolidar_fusion/RansacPlane.h>
+#include <tracklets_depth/TempTrackletFrame.h>
+#include <tracklets_depth/parameters.h>
 
-namespace tracklet_depth {
+namespace tracklets_depth {
+
 class TrackletDepthModule {
   using Point = pcl::PointXYZI;
   using Cloud = pcl::PointCloud<Point>;
@@ -14,9 +27,7 @@ class TrackletDepthModule {
 
  public:
   TrackletDepthModule(
-      const tracklets_depth::TrackletDepthInterfaceParameters& params,
-      const Mono_Lidar::DepthEstimatorParameters& depth_estimator_parameters)
-      : params_(params),
+      const Mono_Lidar::DepthEstimatorParameters& depth_estimator_parameters):
         depth_estimator_parameters_(depth_estimator_parameters) {
     _cloud_last_frame = nullptr;
     // ransac plane will be initialializedin depth estimator
@@ -128,7 +139,7 @@ class TrackletDepthModule {
 
  private:
   ///@brief Parameters
-  tracklets_depth::TrackletDepthInterfaceParameters params_;
+  tracklets_depth::TrackletDepthParameters params_;
   Mono_Lidar::DepthEstimatorParameters depth_estimator_parameters_;
   ///@brief saved ids in a map
   std::map<TypeTrackletKey, feature_tracking::Tracklet> _trackletMap;
@@ -139,10 +150,12 @@ class TrackletDepthModule {
 
   std::deque<StampType> _timestamps;
   ///@brief pinhole Camera model
-  std::shared_ptr<CameraPinhole> _camera;
+  std::shared_ptr<CameraPinhole> _camera{nullptr};
 
   ///@brief Depth Estimator object to estimate the depth of 2d feature points
   Mono_Lidar::DepthEstimator _depthEstimator;
+
+  bool _isDepthEstimatorInitialized{false};
 
   ///@brief Transformation of the Lidar in the camera coordinate frame
   Eigen::Affine3d _camLidarTransform;

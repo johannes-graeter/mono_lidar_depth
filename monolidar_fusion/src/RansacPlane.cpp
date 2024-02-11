@@ -17,7 +17,7 @@
 #include <chrono>
 #include <math.h>
 
-#include <cv.hpp>
+#include <opencv2/opencv.hpp>
 
 #include "Logger.h"
 #include "RansacPlane.h"

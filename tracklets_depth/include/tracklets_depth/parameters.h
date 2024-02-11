@@ -8,7 +8,7 @@
 #pragma once
 
 #include <string>
-#include <opencv/cxcore.h>
+#include <opencv2/opencv.hpp>
 #include <ros/ros.h>
 #include <opencv2/core/core.hpp>
 

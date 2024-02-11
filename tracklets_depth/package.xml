@@ -50,9 +50,16 @@
   <!--   <doc_depend>doxygen</doc_depend> -->
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>roscpp</build_depend>
+  <build_depend>matches_msg_ros</build_depend>
+  <build_depend>viso_feature_tracking</build_depend>
+  <build_depend>matches_msg_depth_ros</build_depend>
+  <build_depend>monolidar_fusion</build_depend>
+  <build_depend>image_geometry</build_depend>
+  <build_depend>cv_bridge</build_depend>
   <build_export_depend>roscpp</build_export_depend>
   <exec_depend>roscpp</exec_depend>
   <depend>yaml-cpp</depend>
+  <depend>libopencv-dev</depend>
 
 
   <!-- The export tag contains other, unspecified, tags -->

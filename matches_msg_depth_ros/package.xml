@@ -35,10 +35,6 @@
                               <build_depend>, <build_export_depend> and
                               <exec_depend>.
   -->
-  <!-- 
-    Example:
-    <depend>mrt_opencv</depend> 
-  -->
 
   <export>
     <!-- Other tools can request additional information be placed here -->

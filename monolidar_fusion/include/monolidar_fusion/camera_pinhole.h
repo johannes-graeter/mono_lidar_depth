@@ -17,11 +17,13 @@
 *
 * interface for a pinhole camera
 */
-class CameraPinhole {
+class CameraPinhole final {
 public:
     // Specify Eigen Alignment, should be obsolete with c++17
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 public: // Attributes.
+  using Ptr=std::shared_ptr<CameraPinhole>;
+  using ConstPtr=std::shared_ptr<const CameraPinhole>;
 public: // Public methods.
     // Default constructor.
     explicit CameraPinhole(

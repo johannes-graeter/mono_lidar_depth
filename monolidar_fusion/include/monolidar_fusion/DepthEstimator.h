@@ -9,7 +9,7 @@
 
 #include <memory>
 #include <Eigen/Eigen> // IWYU pragma: keep
-#include <opencv/cxcore.h>
+#include <opencv2/opencv.hpp>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/features/normal_3d.h>
@@ -80,7 +80,7 @@ public:
     /*
      * Initializes the parameters with default parameters. Must be called before class usuage.
      */
-    bool InitConfig(std::shared_ptr<DepthEstimatorParameters>& parameters = nullptr, const bool printparams = false);
+    bool InitConfig(std::shared_ptr<DepthEstimatorParameters> parameters = nullptr, const bool printparams = false);
 
     void ActivateDebugMode() {
         _debugMode = true;

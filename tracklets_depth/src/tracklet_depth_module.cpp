@@ -1,4 +1,24 @@
+#include <cv_bridge/cv_bridge.h>
+#include <image_geometry/pinhole_camera_model.h>
+#include <sensor_msgs/CameraInfo.h>
 #include "tracklets_depth/tracklet_depth_module.h"
+
+namespace tracklets_depth {
+namespace {
+CameraPinhole::Ptr CreateCameraPinholeFromCameraInfo(const sensor_msgs::CameraInfo::ConstPtr& cam_info) {
+    image_geometry::PinholeCameraModel model;
+    model.fromCameraInfo(cam_info);
+    assert(model.fx() == model.fy()); // we only support undistorted images
+
+    // Extract camera parameters from calibration matrix
+    double focalLengthX = model.fx();
+    double principlePointX = model.cx();
+    double principlePointY = model.cy();
+
+    return std::make_shared<CameraPinhole>(
+        cam_info->width, cam_info->height, focalLengthX, principlePointX, principlePointY);
+}
+}
 
 std::pair<int, int> TrackletDepthModule::ExractNewTrackletFrames(
     const matches_msg_ros::MatchesMsgConstPtr& tracklets_in,
@@ -238,7 +258,7 @@ std::pair<int, int> TrackletDepthModule::convert_tracklets_to_matches_msg(
   return std::make_pair(success, failed);
 }
 
-void TrackletDepthInterface::process(
+void TrackletDepthModule::process(
     const Cloud::ConstPtr& cloud_in,
     const matches_msg_ros::MatchesMsgConstPtr& tracklets_in,
     const CameraInfo::ConstPtr& camInfo,
@@ -246,54 +266,41 @@ void TrackletDepthInterface::process(
   if (cloud_in->points.size() < 100) {
     ROS_WARN_STREAM("In tracklet_depth: received less than 100 points.");
   }
-  // Mono_Lidar::GroundPlane::Ptr groundPlaneCur
   Mono_Lidar::GroundPlane::Ptr gp;
-  if (params_.subscriber_msg_name_semantics != "") {
-    // Do not use semantic information.
-    // Init plane ransac
-    gp = std::make_shared<Mono_Lidar::RansacPlane>(
-        std::make_shared<Mono_Lidar::DepthEstimatorParameters>(
-            depth_estimator_parameters_));
-  }
-
-  else {
-    // Init groundplane.
-    image_geometry::PinholeCameraModel model;
-    model.fromCameraInfo(camInfo);
-    Mono_Lidar::SemanticPlane::Camera cam;
-    cam.f = model.fx();
-    cam.cu = model.cx();
-    cam.cv = model.cy();
-    cam.transform_cam_lidar = _camLidarTransform;
-
-    cv_bridge::CvImageConstPtr img_ptr =
-        cv_bridge::toCvShare(img, sensor_msgs::image_encodings::MONO8);
-    std::set<int> gp_labels{6, 7, 8, 9};
-
-    double plane_inlier_threshold =
-        depth_estimator_parameters_.ransac_plane_refinement_treshold;
-    gp = std::make_shared<Mono_Lidar::SemanticPlane>(
-        img_ptr->image, cam, gp_labels, plane_inlier_threshold);
-  }
+  // Init groundplane.
+  image_geometry::PinholeCameraModel model;
+  model.fromCameraInfo(camInfo);
+  Mono_Lidar::SemanticPlane::Camera cam;
+  cam.f = model.fx();
+  cam.cu = model.cx();
+  cam.cv = model.cy();
+  cam.transform_cam_lidar = _camLidarTransform;
+  cv_bridge::CvImageConstPtr img_ptr =
+      cv_bridge::toCvShare(img, sensor_msgs::image_encodings::MONO8);
+  std::set<int> gp_labels{6, 7, 8, 9};
+  double plane_inlier_threshold =
+      depth_estimator_parameters_.ransac_plane_refinement_treshold;
+  gp = std::make_shared<Mono_Lidar::SemanticPlane>(
+      img_ptr->image, cam, gp_labels, plane_inlier_threshold);
 
   // Timer
   auto start_time = std::chrono::steady_clock::now();
 
   std::stringstream stats;
 
-  _msgCount++;
-
   _timestamps.push_front(tracklets_in->header.stamp);
 
   // Initialize depthestimator it not done
   if (!_isDepthEstimatorInitialized) {
-    this->InitCamera(camInfo);
-    this->InitDepthEstimatorPost();
+    if (_camera==nullptr){
+      _camera = CreateCameraPinholeFromCameraInfo(camInfo);
+    }
+    InitDepthEstimatorPost();
+    _isDepthEstimatorInitialized=true;
   }
 
   double sec = tracklets_in->header.stamp.toSec();
   stats << "Received tracklet-lidar pair at: " << sec << std::endl;
-  stats << "Total messages recieved: " << _msgCount << std::endl;
   stats << "Tracklet length: " << tracklets_in->tracks.size() << std::endl;
 
   // Save all new feature points of the incoming tracklets which haven't been
@@ -321,8 +328,8 @@ void TrackletDepthInterface::process(
   }
   try {
     CalculateFeatureDepthsCurFrame(cloud_in, tempFrames, frameCountNew,
-                                   depthsCurFrame, groundPlaneCur);
-    if (groundPlaneCur == nullptr) {
+                                   depthsCurFrame, gp);
+    if (gp == nullptr) {
       ROS_ERROR_STREAM("TrackletDepthInterface: Plane not calculated");
     }
 
@@ -337,14 +344,14 @@ void TrackletDepthInterface::process(
     depthsCurFrame.setConstant(-1);
 
     // mark plane invalid so it will be recalculated next time.
-    groundPlaneCur = nullptr;
+    gp = nullptr;
 
     // declare cloud invalid
     _cloud_last_frame = nullptr;
   }
 
   // remember the ransac plane
-  groundPlaneLast_ = groundPlaneCur;
+  groundPlaneLast_ = gp;
 
   // Write Results
   std::vector<TypeTrackletKey> updatetIds;
@@ -358,12 +365,7 @@ void TrackletDepthInterface::process(
   matches_msg_depth_ros::MatchesMsg msgOut;
   auto matchesSuccess =
       convert_tracklets_to_matches_msg(tracklets_in, updatetIds, msgOut);
-  // msgOut.header.stamp = tracklets_in->header.stamp;
-  _publisher_matches.publish(msgOut);
 
-  if (params_.publisher_msg_name_image_projection_cloud != "") {
-    PublishImageProjectionCloud(camInfo->width, camInfo->height);
-  }
   stats << "Feature Estimation success count: " << matchesSuccess.first
         << std::endl;
   stats << "Feature Estimation fail count: " << matchesSuccess.second
@@ -408,14 +410,14 @@ bool TrackletDepthModule::InitDepthEstimatorPost() {
 
 bool TrackletDepthModule::InitDepthEstimatorPre() {
   std::cout << "Initialize DepthEstimator Pre" << std::endl;
-  if (!_depthEstimator.InitConfig(depth_estimator_parameters_))
+  if (!_depthEstimator.InitConfig(std::make_shared<Mono_Lidar::DepthEstimatorParameters>(depth_estimator_parameters_))){
     throw "Error in 'initConfig' of DepthEstimator.";
+  }
 
   return true;
 }
 
-void TrackletDepthModule::SetCameraLidarTransform(
-    const Eigen::Affine3d& camera_T_lidar) {
+void TrackletDepthModule::SetCameraLidarTransform(const Eigen::Affine3d& camera_T_lidar) {
       _camLidarTransform = camera_T_lidar;
-
-    }
+}
+}

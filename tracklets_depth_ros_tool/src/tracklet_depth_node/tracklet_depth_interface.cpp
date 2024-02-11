@@ -9,7 +9,6 @@
 #include <tf_conversions/tf_eigen.h>
 
 #include <cv_bridge/cv_bridge.h>
-#include <opencv/cv.h>
 #include <opencv2/opencv.hpp>
 #include <opencv2/core/eigen.hpp>
 
@@ -44,10 +43,10 @@ TrackletDepthInterface::TrackletDepthInterface(ros::NodeHandle node_handle, ros:
 
     depth_estimator_parameters_.fromFile(_path_config_depthEstimator);
 
-    tracklet_depth_module_.reset(new tracklets_depth::TrackletDepthModule(_params, depth_estimator_parameters_));
+    tracklet_depth_module_.reset(new tracklets_depth::TrackletDepthModule(depth_estimator_parameters_));
 
     // Initialize
-    this->InitDepthEstimatorPre();
+    tracklet_depth_module_->InitDepthEstimatorPre();
     this->InitSubscriber(node_handle, _params.subscriber_msg_name_semantics != "");
     this->InitPublisher(node_handle);
     this->InitStaticTransforms();
@@ -161,52 +160,12 @@ bool TrackletDepthInterface::InitStaticTransforms() {
     tracklet_depth_module_->SetCameraLidarTransform(transformEigen);
     // _camLidarTransform = transformEigen;
 
-    ROS_INFO_STREAM("Got the tf transformations: " << endl << _camLidarTransform.matrix());
+    // ROS_INFO_STREAM("Got the tf transformations: " << endl << _camLidarTransform.matrix());
 
     return true;
 }
 
 
-void TrackletDepthInterface::InitCamera(const CameraInfo::ConstPtr& cam_info) {
-    // Check preconditions
-    if (_isCameraInitialized)
-        return;
-
-    image_geometry::PinholeCameraModel model;
-    model.fromCameraInfo(cam_info);
-    assert(model.fx() == model.fy()); // we only support undistorted images
-
-    // Extract camera parameters from calibration matrix
-    double focalLengthX = model.fx();
-    double principlePointX = model.cx();
-    double principlePointY = model.cy();
-
-    // Create camera model
-    _camera = std::make_shared<CameraPinhole>(
-        cam_info->width, cam_info->height, focalLengthX, principlePointX, principlePointY);
-
-    _isCameraInitialized = true;
-
-    // debug
-    ROS_INFO_STREAM("Got the camera info:" << std::endl
-                                           << "Got the camera info:"
-                                           << std::endl
-                                           << "img_width: "
-                                           << cam_info->width
-                                           << std::endl
-                                           << "img_height: "
-                                           << cam_info->height
-                                           << std::endl
-                                           << "focal_length_x: "
-                                           << focalLengthX
-                                           << std::endl
-                                           << "principalPointX: "
-                                           << principlePointX
-                                           << std::endl
-                                           << "principalPointY: "
-                                           << principlePointY
-                                           << std::endl);
-}
 
 
 void TrackletDepthInterface::InitPublisher(ros::NodeHandle& nh) {

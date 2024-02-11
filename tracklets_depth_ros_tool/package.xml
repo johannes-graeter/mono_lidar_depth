@@ -20,7 +20,6 @@
   <depend>nodelet</depend>
 
   <depend>feature_tracking_core</depend>
-  <depend>mrt_pcl</depend>
   <depend>eigen</depend>
 
   <depend>tf_conversions</depend>
@@ -32,7 +31,6 @@
 
   <depend>image_transport</depend>
   <depend>image_geometry</depend>
-<!--  <depend>mrt_opencv</depend>-->
   <depend>cv_bridge</depend>
 
   <!--
@@ -49,13 +47,11 @@
                               <build_depend>, <build_export_depend> and
                               <exec_depend>.
   -->
-  <!--
-    Example:
-    <depend>mrt_opencv</depend>
-  -->
 
   <depend>dynamic_reconfigure</depend>
   <depend>message_filters</depend>
+  <depend>libopencv-dev</depend>
+  <depend>libceres-dev</depend>
   <build_depend>rosinterface_handler</build_depend>
   <export>
     <nodelet plugin="${prefix}/nodelet_plugins.xml" /><!-- Other tools can request additional information be placed here -->

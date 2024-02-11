@@ -30,6 +30,7 @@
 
 
 #include "tracklets_depth/TempTrackletFrame.h"
+#include "tracklets_depth/tracklet_depth_module.h"
 #include "tracklets_depth/parameters.h"
 
 namespace tracklets_depth_ros_tool {
@@ -73,7 +74,6 @@ private:
 
     void InitSubscriber(ros::NodeHandle& nh, bool use_semantics = false);
     void InitPublisher(ros::NodeHandle& nh);
-    void InitCamera(const CameraInfo::ConstPtr& camInfo);
     bool InitStaticTransforms();
 
     // ____ Publisher methods _____
@@ -131,18 +131,13 @@ public: // attributes
     ///@brief Original tracklets with added depth information
     ros::Publisher _publisher_matches;
 
-
-    int _msgCount = 0;
-
-
-
     ///@brief parameters
 
     ///@brief File Location of the depth estimator config file
     std::string _path_config_depthEstimator;
 
     ///@brief Parameters
-    tracklets_depth::TrackletDepthInterfaceParameters _params;
+    tracklets_depth::TrackletDepthParameters _params;
     Mono_Lidar::DepthEstimatorParameters depth_estimator_parameters_;
 
     std::unique_ptr<tracklets_depth::TrackletDepthModule> tracklet_depth_module_; 

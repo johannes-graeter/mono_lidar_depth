@@ -1,3 +1,4 @@
+#pragma once
 #include <utility>
 
 namespace tracklets_depth{

@@ -2,7 +2,7 @@
 
 #include <chrono>
 #include <unordered_map>
-#include "cv.hpp"
+#include <opencv2/opencv.hpp>
 #include "cv_bridge/cv_bridge.h"
 
 namespace matches_conversion_ros_tool {

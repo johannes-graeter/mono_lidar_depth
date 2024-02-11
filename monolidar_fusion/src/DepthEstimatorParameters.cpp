@@ -6,7 +6,7 @@ n li * DepthEstirmatorParameters.cpp
  */
 
 #include <iostream>
-#include <opencv/cxcore.h>
+#include <opencv2/opencv.hpp>
 #include <opencv2/core/core.hpp>
 
 #include "DepthEstimatorParameters.h"
